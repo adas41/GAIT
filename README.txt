@@ -1,1 +1,5 @@
-Hello!
+GAIT allows developers to add gestural interactions to their applications on the fly. The toolkit has a recognizer to interpret touch events as either command or non-command gestures.
+
+The toolkit also extends feedback and feedforward interactions for command gestures. This will include real-time semantic gesture suggestions, confidence measure and beautification. These can greatly aid user learning - something we are interested to study in our evaluations.
+
+Non-command gestures affords the developer to add look-n-feel effects on the fly which eventually empowers the user to interact with digital objects in ways analogous to manipulation of real objects. At the implementation-level gestural interactions are modeled within a physics simulation leveraging techniques like 'exaggeration' and 'reinforcement' to bring real-world dynamics to interactive surfaces creating a seamless experience for users.
