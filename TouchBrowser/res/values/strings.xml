@@ -1,0 +1,8 @@
+<resources>
+	<string name="instructions">Drag or stretch photos</string>
+    <string name="app_name">TestPhotoSortr</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_photo_sortr">PhotoSortrActivity</string>
+
+</resources>
