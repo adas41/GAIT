@@ -28,6 +28,7 @@ package edu.gatech.project.touchbrowser;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -67,6 +68,8 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	private static final int UI_MODE_ROTATE = 1, UI_MODE_ANISOTROPIC_SCALE = 2;
 
 	private int mUIMode = UI_MODE_ROTATE;
+	
+	private boolean isAllSelected = false;
 
 	// --
 
@@ -98,19 +101,13 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		for (int i = 0; i < resources.size(); i++)
 			mImages.add(new Img(context, resources.get(i), res));*/
 		
-		mLinePaintTouchPointCircle.setColor(Color.YELLOW);
+		mLinePaintTouchPointCircle.setColor(Color.WHITE);
 		mLinePaintTouchPointCircle.setStrokeWidth(5);
-		mLinePaintTouchPointCircle.setStyle(Style.STROKE);
+		mLinePaintTouchPointCircle.setStyle(Style.FILL);
 		mLinePaintTouchPointCircle.setAntiAlias(true);
 		setBackgroundColor(Color.BLACK);
 		
-		
-		Animation an = new TranslateAnimation(0, 100, 0, 200);
-	      an.setDuration(2000);
-	      an.setRepeatCount(-1);
-	      an.initialize(10, 10, 10, 10);
-	      
-	      
+
 		
 	}
 	
@@ -167,6 +164,24 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 				canvas.drawCircle(xs[i], ys[i], 50 + pressures[i] * 80, mLinePaintTouchPointCircle);
 			if (numPoints == 2)
 				canvas.drawLine(xs[0], ys[0], xs[1], ys[1], mLinePaintTouchPointCircle);
+			if(numPoints == 5 && isAllSelected){
+				//De-select resources
+				for(Img img: mImages){
+					img.setIsSelected(false);
+					//canvas.drawRect(img.getMinX(), img.getMinY() , img.getMaxX(), img.getMaxX(), paint);
+					img.draw(canvas,0);
+				}
+				
+			}
+			if(numPoints == 5 && !isAllSelected){
+				//Select resources			
+				for(Img img: mImages){
+					img.setIsSelected(true);
+					//canvas.drawRect(img.getMinX(), img.getMinY() , img.getMaxX(), img.getMaxX(), paint);
+					img.draw(canvas,0);
+				}
+			}
+			
 		}
 	}
 
@@ -216,6 +231,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	}
 
 	/** Get the current position and scale of the selected image. Called whenever a drag starts or is reset. */
+	@SuppressLint("NewApi")
 	public void getPositionAndScale(Img img, PositionAndScale objPosAndScaleOut) {
 		// FIXME affine-izem (and fix the fact that the anisotropic_scale part requires averaging the two scale factors)
 		objPosAndScaleOut.set(img.getCenterX(), img.getCenterY(), (mUIMode & UI_MODE_ANISOTROPIC_SCALE) == 0,

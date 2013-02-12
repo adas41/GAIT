@@ -31,7 +31,7 @@ class Img extends ImageView {
 
 	private static final float SCREEN_MARGIN = 100;
 	
-	private boolean selected;
+	private boolean isSelected;
 	
 	private DragPoint start;
 	private DragPoint end;
@@ -41,8 +41,10 @@ class Img extends ImageView {
 		this.resId = resId;
 		this.firstLoad = true;
 		getMetrics(res);
-		this.selected = false;
+		this.isSelected = false;
 	}
+	
+	
 
 	private void getMetrics(Resources res) {
 		DisplayMetrics metrics = res.getDisplayMetrics();
@@ -147,7 +149,7 @@ class Img extends ImageView {
 		canvas.rotate(angle * 180.0f / (float) Math.PI);
 		canvas.translate(-dx, -dy);
 		drawable.draw(canvas);
-		if(this.selected){
+		if(this.isSelected){
 			canvas.drawRect(minX, minY , maxX, maxY, paint);
 		}
 		if(this.start != null && this.end != null){
@@ -162,11 +164,11 @@ class Img extends ImageView {
 	}
 	
 	public void toggleSelected(){
-		selected = !selected;
+		isSelected = !isSelected;
 	}
 	
 	public boolean isResSelected(){
-		return selected;
+		return isSelected;
 	}
 
 	public Drawable getDrawable() {
@@ -216,6 +218,10 @@ class Img extends ImageView {
 
 	public float getMaxY() {
 		return maxY;
+	}
+	
+	public void setIsSelected(boolean state){
+		this.isSelected = state;
 	}
 
 	/**

@@ -66,7 +66,7 @@ public class PhotoSortrActivity extends Activity {
 		flayout.addView(folder1, fParams);
 		flayout.addView(folder2, fParams);
 		flayout.addView(folder3, fParams);
-		for(int i =0; i < 60; i++){
+		for(int i =0; i < 20; i++){
 			ImageButton folder = new ImageButton(this);
 			folder.setImageDrawable(getResources().getDrawable(R.drawable.icon));
 			flayout.addView(folder, fParams);
