@@ -31,7 +31,7 @@ class Img extends ImageView {
 
 	private static final float SCREEN_MARGIN = 100;
 	
-	private boolean isSelected;
+	private boolean imgSelected;
 	
 	private DragPoint start;
 	private DragPoint end;
@@ -41,7 +41,7 @@ class Img extends ImageView {
 		this.resId = resId;
 		this.firstLoad = true;
 		getMetrics(res);
-		this.isSelected = false;
+		this.imgSelected = false;
 	}
 	
 	
@@ -149,7 +149,7 @@ class Img extends ImageView {
 		canvas.rotate(angle * 180.0f / (float) Math.PI);
 		canvas.translate(-dx, -dy);
 		drawable.draw(canvas);
-		if(this.isSelected){
+		if(this.imgSelected){
 			canvas.drawRect(minX, minY , maxX, maxY, paint);
 		}
 		if(this.start != null && this.end != null){
@@ -164,11 +164,11 @@ class Img extends ImageView {
 	}
 	
 	public void toggleSelected(){
-		isSelected = !isSelected;
+		imgSelected = !imgSelected;
 	}
 	
 	public boolean isResSelected(){
-		return isSelected;
+		return imgSelected;
 	}
 
 	public Drawable getDrawable() {
@@ -220,9 +220,7 @@ class Img extends ImageView {
 		return maxY;
 	}
 	
-	public void setIsSelected(boolean state){
-		this.isSelected = state;
-	}
+	
 
 	/**
 	 * @return the start
@@ -257,6 +255,24 @@ class Img extends ImageView {
 	 */
 	public int getResId() {
 		return resId;
+	}
+
+
+
+	/**
+	 * @return the imgSelected
+	 */
+	public boolean isImgSelected() {
+		return imgSelected;
+	}
+
+
+
+	/**
+	 * @param imgSelected the imgSelected to set
+	 */
+	public void setImgSelected(boolean imgSelected) {
+		this.imgSelected = imgSelected;
 	}
 
 	

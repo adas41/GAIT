@@ -164,23 +164,35 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 				canvas.drawCircle(xs[i], ys[i], 50 + pressures[i] * 80, mLinePaintTouchPointCircle);
 			if (numPoints == 2)
 				canvas.drawLine(xs[0], ys[0], xs[1], ys[1], mLinePaintTouchPointCircle);
-			if(numPoints == 5 && isAllSelected){
+			if(numPoints == 5){
 				//De-select resources
+				boolean allSelected = true;
 				for(Img img: mImages){
-					img.setIsSelected(false);
-					//canvas.drawRect(img.getMinX(), img.getMinY() , img.getMaxX(), img.getMaxX(), paint);
-					img.draw(canvas,0);
+					if(img.isImgSelected()){
+						allSelected = false;
+						break;
+					}
 				}
+					for(Img img2 : mImages){
+						if(allSelected)
+							img2.setImgSelected(false) ;
+							else
+							img2.setImgSelected(true);
+					}
+					//canvas.drawRect(img.getMinX(), img.getMinY() , img.getMaxX(), img.getMaxX(), paint);
+					//img.draw(canvas,0);
 				
+				//isAllSelected = false;
 			}
-			if(numPoints == 5 && !isAllSelected){
+			/*if(numPoints == 5 && !isAllSelected){
 				//Select resources			
 				for(Img img: mImages){
 					img.setIsSelected(true);
 					//canvas.drawRect(img.getMinX(), img.getMinY() , img.getMaxX(), img.getMaxX(), paint);
-					img.draw(canvas,0);
+					//img.draw(canvas,0);
 				}
-			}
+				isAllSelected = true;
+			}*/
 			
 		}
 	}
