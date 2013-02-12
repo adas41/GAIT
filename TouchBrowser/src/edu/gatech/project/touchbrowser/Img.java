@@ -77,16 +77,17 @@ class Img extends ImageView {
 			sx = this.scaleX;
 			sy = this.scaleY;
 			// Make sure the image is not off the screen after a screen rotation
-			if (this.maxX < SCREEN_MARGIN)
+			/*if (this.maxX < SCREEN_MARGIN)
 				cx = SCREEN_MARGIN;
 			else if (this.minX > displayWidth - SCREEN_MARGIN)
 				cx = displayWidth - SCREEN_MARGIN;
 			if (this.maxY > SCREEN_MARGIN)
 				cy = SCREEN_MARGIN;
 			else if (this.minY > displayHeight - SCREEN_MARGIN)
-				cy = displayHeight - SCREEN_MARGIN;
+				cy = displayHeight - SCREEN_MARGIN;*/
 		}
-		setPos(cx, cy, sx, sy, 0.0f);
+		System.out.println("++++++++ load() method minX:"+minX+" minY:"+minY+" maxX:"+maxX+" maxY:"+maxY);
+		setPos(cx, cy, sx, sy, this.angle);
 	}
 
 	/** Called by activity's onPause() method to free memory used for loading the images */
@@ -121,6 +122,8 @@ class Img extends ImageView {
 		this.minY = newMinY;
 		this.maxX = newMaxX;
 		this.maxY = newMaxY;
+		//System.out.println("++++++++ setPos() method centerY:"+centerY);
+		
 		return true;
 	}
 
@@ -138,6 +141,7 @@ class Img extends ImageView {
 		paint.setStrokeWidth(5);
 		float dx = (maxX + minX) / 2;
 		float dy = (maxY + minY) / 2;
+		//System.out.println("++++++++ draw() method minX:"+minX+" minY:"+minY+" maxX:"+maxX+" maxY:"+maxY);
 		drawable.setBounds((int) minX, (int) minY, (int) maxX, (int) maxY);
 		canvas.translate(dx, dy);
 		canvas.rotate(angle * 180.0f / (float) Math.PI);
