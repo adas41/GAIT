@@ -20,7 +20,13 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
+ * 
+ * Icon courtesy: http://www.oxygen-icons.org/
+ * 
+ * 
  */
+
+
 package edu.gatech.project.touchbrowser;
 
 import java.util.List;
@@ -45,8 +51,8 @@ public class PhotoSortrActivity extends Activity {
 	PhotoSortrView photoSorter;
 	HorizontalScrollView folderView;
 	RelativeLayout containerLayout;
-	private static final int[] IMAGES1 = { R.drawable.m74hubble, R.drawable.catarina, R.drawable.tahiti}; 
-	private static final int[] IMAGES2 = { R.drawable.sunset, R.drawable.lake };
+	private static final int[] IMAGES1 = { R.drawable.campus1, R.drawable.campus2, R.drawable.campus3, R.drawable.campus4}; 
+	private static final int[] IMAGES2 = { R.drawable.campus5, R.drawable.campus6, R.drawable.campus7, R.drawable.campus8 };
 	Folder currentFolder;
 	
 	@Override
@@ -59,24 +65,19 @@ public class PhotoSortrActivity extends Activity {
 		LinearLayout flayout = new LinearLayout(this);
 		LinearLayout.LayoutParams fParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,60);
 		fParams.setMargins(25, 10, 25, 10);
-		Folder folder1 = new Folder(this,R.drawable.gesture, IMAGES1);
-		Folder folder2 = new Folder(this, R.drawable.gallery, IMAGES2);
-		Folder folder3 = new Folder(this, R.drawable.icon);
+		Folder folder1 = new Folder(this,R.drawable.directory, IMAGES1);
+		Folder folder2 = new Folder(this, R.drawable.directory, IMAGES2);
+		Folder folder3 = new Folder(this, R.drawable.directory);
 		
 		flayout.addView(folder1, fParams);
 		flayout.addView(folder2, fParams);
 		flayout.addView(folder3, fParams);
 		for(int i =0; i < 20; i++){
 			ImageButton folder = new ImageButton(this);
-			folder.setImageDrawable(getResources().getDrawable(R.drawable.icon));
+			folder.setImageDrawable(getResources().getDrawable(R.drawable.directory));
 			flayout.addView(folder, fParams);
 		}
 		
-		View v = new View(getApplicationContext());
-		v.setBackgroundResource(R.drawable.icon);
-		//flayout.addView(v,fParams);
-		containerLayout.addView(v,new LinearLayout.LayoutParams(10,20));
-		containerLayout.removeView(v);
 		
 		folder1.setOnClickListener(new View.OnClickListener() {			
 			@Override

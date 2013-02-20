@@ -11,16 +11,17 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int catarina=0x7f020000;
-        public static final int gallery=0x7f020001;
-        public static final int gesture=0x7f020002;
-        public static final int ic_action_search=0x7f020003;
-        public static final int ic_launcher=0x7f020004;
-        public static final int icon=0x7f020005;
-        public static final int lake=0x7f020006;
-        public static final int m74hubble=0x7f020007;
-        public static final int sunset=0x7f020008;
-        public static final int tahiti=0x7f020009;
+        public static final int campus1=0x7f020000;
+        public static final int campus2=0x7f020001;
+        public static final int campus3=0x7f020002;
+        public static final int campus4=0x7f020003;
+        public static final int campus5=0x7f020004;
+        public static final int campus6=0x7f020005;
+        public static final int campus7=0x7f020006;
+        public static final int campus8=0x7f020007;
+        public static final int directory=0x7f020008;
+        public static final int ic_action_search=0x7f020009;
+        public static final int ic_launcher=0x7f02000a;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;

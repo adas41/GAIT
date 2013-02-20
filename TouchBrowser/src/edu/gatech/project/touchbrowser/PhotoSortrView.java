@@ -22,6 +22,10 @@
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
+ * 
+ * 
+ * Icon courtesy: http://www.oxygen-icons.org/
+ * 
  */
 package edu.gatech.project.touchbrowser;
 
@@ -39,25 +43,22 @@ import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
-
-import com.example.testphotosortr.R;
-
 import edu.gatech.project.touchbrowser.MultiTouchController.MultiTouchObjectCanvas;
 import edu.gatech.project.touchbrowser.MultiTouchController.PointInfo;
 import edu.gatech.project.touchbrowser.MultiTouchController.PositionAndScale;
 
-
 public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> {
 
-	private static final int[] IMAGES = { R.drawable.m74hubble, R.drawable.catarina, R.drawable.tahiti, R.drawable.sunset, R.drawable.lake };
+	// private static final int[] IMAGES = { R.drawable.m74hubble,
+	// R.drawable.catarina, R.drawable.tahiti, R.drawable.sunset,
+	// R.drawable.lake };
 
 	private List<Img> mImages;
-	
+
 	// --
 
-	private MultiTouchController<Img> multiTouchController = new MultiTouchController<Img>(this);
+	private MultiTouchController<Img> multiTouchController = new MultiTouchController<Img>(
+			this);
 
 	// --
 
@@ -68,7 +69,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	private static final int UI_MODE_ROTATE = 1, UI_MODE_ANISOTROPIC_SCALE = 2;
 
 	private int mUIMode = UI_MODE_ROTATE;
-	
+
 	private boolean isAllSelected = false;
 
 	// --
@@ -77,19 +78,22 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	Context context;
 
 	private AnimationDrawable mDrawable;
-	
-	
+
+	private boolean allSelected = false;
+
 	// ---------------------------------------------------------------------------------------------------
 
 	public PhotoSortrView(Context context, List<Img> resources) {
-		this(context, null,resources);
+		this(context, null, resources);
 	}
 
-	public PhotoSortrView(Context context, AttributeSet attrs, List<Img> resources) {
+	public PhotoSortrView(Context context, AttributeSet attrs,
+			List<Img> resources) {
 		this(context, attrs, 0, resources);
 	}
 
-	public PhotoSortrView(Context context, AttributeSet attrs, int defStyle, List<Img> resources) {
+	public PhotoSortrView(Context context, AttributeSet attrs, int defStyle,
+			List<Img> resources) {
 		super(context, attrs, defStyle);
 		this.context = context;
 		this.mImages = resources;
@@ -97,21 +101,22 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	}
 
 	private void init(Context context) {
-		/*Resources res = context.getResources();
-		for (int i = 0; i < resources.size(); i++)
-			mImages.add(new Img(context, resources.get(i), res));*/
-		
+		/*
+		 * Resources res = context.getResources(); for (int i = 0; i <
+		 * resources.size(); i++) mImages.add(new Img(context, resources.get(i),
+		 * res));
+		 */
+
 		mLinePaintTouchPointCircle.setColor(Color.WHITE);
 		mLinePaintTouchPointCircle.setStrokeWidth(5);
 		mLinePaintTouchPointCircle.setStyle(Style.FILL);
 		mLinePaintTouchPointCircle.setAntiAlias(true);
-		setBackgroundColor(Color.BLACK);
-		
+		mLinePaintTouchPointCircle.setAlpha(100);
+		setBackgroundColor(Color.rgb(47, 47, 47));
 
-		
 	}
-	
-	public void loadAgain(Context context, List<Img> objects){
+
+	public void loadAgain(Context context, List<Img> objects) {
 		Resources res = context.getResources();
 		mImages = objects;
 		for (int i = 0; i < mImages.size(); i++)
@@ -127,7 +132,10 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			mImages.get(i).load(res);
 	}
 
-	/** Called by activity's onPause() method to free memory used for loading the images */
+	/**
+	 * Called by activity's onPause() method to free memory used for loading the
+	 * images
+	 */
 	public void unloadImages() {
 		int n = mImages.size();
 		for (int i = 0; i < n; i++)
@@ -141,7 +149,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		super.onDraw(canvas);
 		int n = mImages.size();
 		for (int i = 0; i < n; i++)
-			mImages.get(i).draw(canvas,i);
+			mImages.get(i).draw(canvas, i);
 		if (mShowDebugInfo)
 			drawMultitouchDebugMarks(canvas);
 	}
@@ -158,42 +166,37 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			float[] xs = currTouchPoint.getXs();
 			float[] ys = currTouchPoint.getYs();
 			float[] pressures = currTouchPoint.getPressures();
-			//int numPoints = Math.min(currTouchPoint.getNumTouchPoints(), 2);
+			// int numPoints = Math.min(currTouchPoint.getNumTouchPoints(), 2);
 			int numPoints = currTouchPoint.getNumTouchPoints();
 			for (int i = 0; i < numPoints; i++)
-				canvas.drawCircle(xs[i], ys[i], 50 + pressures[i] * 80, mLinePaintTouchPointCircle);
-			if (numPoints == 2)
-				canvas.drawLine(xs[0], ys[0], xs[1], ys[1], mLinePaintTouchPointCircle);
-			if(numPoints == 5){
-				//De-select resources
-				boolean allSelected = true;
-				for(Img img: mImages){
-					if(img.isImgSelected()){
+				canvas.drawCircle(xs[i], ys[i], 50 + pressures[i] * 80,
+						mLinePaintTouchPointCircle);
+			/*if (numPoints == 2)
+				canvas.drawLine(xs[0], ys[0], xs[1], ys[1],
+						mLinePaintTouchPointCircle);*/
+			if (numPoints == 5) {
+				allSelected = true;
+				for (Img img : mImages) {
+					if (img.isImgSelected() == false) {
 						allSelected = false;
 						break;
 					}
 				}
-					for(Img img2 : mImages){
-						if(allSelected)
-							img2.setImgSelected(false) ;
-							else
-							img2.setImgSelected(true);
-					}
-					//canvas.drawRect(img.getMinX(), img.getMinY() , img.getMaxX(), img.getMaxX(), paint);
-					//img.draw(canvas,0);
 				
-				//isAllSelected = false;
+				if (allSelected)
+					for (Img img2 : mImages)
+						img2.setImgSelected(false);
+				else		
+					for (Img img2 : mImages){
+						img2.setImgSelected(true);
+						allSelected = true;
+					}
+				
+				//System.out.print(allSelected);
+				
 			}
-			/*if(numPoints == 5 && !isAllSelected){
-				//Select resources			
-				for(Img img: mImages){
-					img.setIsSelected(true);
-					//canvas.drawRect(img.getMinX(), img.getMinY() , img.getMaxX(), img.getMaxX(), paint);
-					//img.draw(canvas,0);
-				}
-				isAllSelected = true;
-			}*/
 			
+
 		}
 	}
 
@@ -205,7 +208,10 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		return multiTouchController.onTouchEvent(event);
 	}
 
-	/** Get the image that is under the single-touch point, or return null (canceling the drag op) if none */
+	/**
+	 * Get the image that is under the single-touch point, or return null
+	 * (canceling the drag op) if none
+	 */
 	public Img getDraggableObjectAtPoint(PointInfo pt) {
 		float x = pt.getX(), y = pt.getY();
 		int n = mImages.size();
@@ -218,8 +224,9 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	}
 
 	/**
-	 * Select an object for dragging. Called whenever an object is found to be under the point (non-null is returned by getDraggableObjectAtPoint())
-	 * and a drag operation is starting. Called with null when drag op ends.
+	 * Select an object for dragging. Called whenever an object is found to be
+	 * under the point (non-null is returned by getDraggableObjectAtPoint()) and
+	 * a drag operation is starting. Called with null when drag op ends.
 	 */
 	public void selectObject(Img img, PointInfo touchPoint, boolean recordDrag) {
 		currTouchPoint.set(touchPoint);
@@ -228,12 +235,15 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			mImages.remove(img);
 			mImages.add(img);
 			img.toggleSelected();
-			if(recordDrag){
-				if(img.getStart() == null){
-					img.setStart(new DragPoint(touchPoint.getX(), touchPoint.getY()));
-				}else{
-					//if(add logic to check if selection happened in place of drag)
-					img.setEnd(new DragPoint(touchPoint.getX(), touchPoint.getY()));
+			if (recordDrag) {
+				if (img.getStart() == null) {
+					img.setStart(new DragPoint(touchPoint.getX(), touchPoint
+							.getY()));
+				} else {
+					// if(add logic to check if selection happened in place of
+					// drag)
+					img.setEnd(new DragPoint(touchPoint.getX(), touchPoint
+							.getY()));
 				}
 			}
 		} else {
@@ -242,31 +252,39 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		invalidate();
 	}
 
-	/** Get the current position and scale of the selected image. Called whenever a drag starts or is reset. */
+	/**
+	 * Get the current position and scale of the selected image. Called whenever
+	 * a drag starts or is reset.
+	 */
 	@SuppressLint("NewApi")
 	public void getPositionAndScale(Img img, PositionAndScale objPosAndScaleOut) {
-		// FIXME affine-izem (and fix the fact that the anisotropic_scale part requires averaging the two scale factors)
-		objPosAndScaleOut.set(img.getCenterX(), img.getCenterY(), (mUIMode & UI_MODE_ANISOTROPIC_SCALE) == 0,
-				(img.getScaleX() + img.getScaleY()) / 2, (mUIMode & UI_MODE_ANISOTROPIC_SCALE) != 0, img.getScaleX(), img.getScaleY(),
-				(mUIMode & UI_MODE_ROTATE) != 0, img.getAngle());
+		// FIXME affine-izem (and fix the fact that the anisotropic_scale part
+		// requires averaging the two scale factors)
+		objPosAndScaleOut.set(img.getCenterX(), img.getCenterY(),
+				(mUIMode & UI_MODE_ANISOTROPIC_SCALE) == 0,
+				(img.getScaleX() + img.getScaleY()) / 2,
+				(mUIMode & UI_MODE_ANISOTROPIC_SCALE) != 0, img.getScaleX(),
+				img.getScaleY(), (mUIMode & UI_MODE_ROTATE) != 0,
+				img.getAngle());
 	}
 
 	/** Set the position and scale of the dragged/stretched image. */
-	public boolean setPositionAndScale(Img img, PositionAndScale newImgPosAndScale, PointInfo touchPoint) {
+	public boolean setPositionAndScale(Img img,
+			PositionAndScale newImgPosAndScale, PointInfo touchPoint) {
 		currTouchPoint.set(touchPoint);
 		boolean ok = img.setPos(newImgPosAndScale);
-		if (ok){
-			
+		if (ok) {
+
 			invalidate();
 		}
 		return ok;
 	}
-	
-	public List<Img> getSelectedresources(){
+
+	public List<Img> getSelectedresources() {
 		List<Img> result = null;
-		for(Img img : mImages){
-			if(img.isResSelected()){
-				if(result == null){
+		for (Img img : mImages) {
+			if (img.isResSelected()) {
+				if (result == null) {
 					result = new ArrayList<Img>();
 				}
 				result.add(img);
@@ -274,15 +292,12 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		}
 		return result;
 	}
-	
-	public List<Img> getAllResources(){
+
+	public List<Img> getAllResources() {
 		return mImages;
 	}
-	
-	
+
 }
-	
 
-	// ----------------------------------------------------------------------------------------------
+// ----------------------------------------------------------------------------------------------
 
-	

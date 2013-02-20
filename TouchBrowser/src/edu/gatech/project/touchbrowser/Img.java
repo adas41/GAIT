@@ -152,13 +152,13 @@ class Img extends ImageView {
 		if(this.imgSelected){
 			canvas.drawRect(minX, minY , maxX, maxY, paint);
 		}
-		if(this.start != null && this.end != null){
+/*		if(this.start != null && this.end != null){
 			canvas.drawCircle(start.x, start.y, 2, paint);
 			canvas.drawCircle(end.x, end.y, 2, paint);
 			this.start = null;
 			this.end = null;
 		}
-		canvas.restore();
+*/		canvas.restore();
 		
 		
 	}
