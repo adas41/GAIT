@@ -62,6 +62,7 @@ package edu.gatech.project.touchbrowser;
  */
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import android.util.Log;
 import android.view.MotionEvent;
@@ -164,6 +165,14 @@ public class MultiTouchController<T> {
 
 	/** Current drag mode */
 	private int mMode = MODE_NOTHING;
+	
+	//hitesh
+	private long outTouchStartTime = -1;
+	private boolean longTouchRecorded = false;
+	//arindam
+	DragPoint dragPoint;
+	
+	public ArrayList<DragPoint> listOfDragPoints;
 
 	// ----------------------------------------------------------------------------------------------------------------------
 
@@ -278,6 +287,7 @@ public class MultiTouchController<T> {
 					if (DEBUG)
 						Log.i("MultiTouch", "Got here 4");
 					int numPointers = Math.min(pointerCount, MAX_TOUCH_POINTS);
+					System.out.println("++++++++else block, numpointers:"+numPointers);
 					if (DEBUG && pointerCount > MAX_TOUCH_POINTS)
 						Log.i("MultiTouch", "Got more pointers than MAX_TOUCH_POINTS");
 					for (int ptrIdx = 0; ptrIdx < numPointers; ptrIdx++) {
@@ -396,8 +406,32 @@ public class MultiTouchController<T> {
 					anchorAtThisPositionAndScale();
 					// Don't need any settling time if just placing one finger, there is no noise
 					mSettleStartTime = mSettleEndTime = mCurrPt.getEventTime();
-					System.out.println("+++drag started at x:"+mCurrPt.getX()+" y:"+mCurrPt.getY());
+					//System.out.println("+++drag started at x:"+mCurrPt.getX()+" y:"+mCurrPt.getY());
+					//arindam
+					dragPoint = new DragPoint(mCurrPt.getX(), mCurrPt.getY());
+					if(listOfDragPoints == null)
+						listOfDragPoints = new ArrayList<DragPoint>();
+					listOfDragPoints.add(dragPoint);
 				}
+				//hitesh code
+				else{
+					//System.out.println("+++++++++++++++++tapped outside");
+					if(outTouchStartTime == -1 && !longTouchRecorded){
+						
+						outTouchStartTime = mCurrPt.getEventTime();
+						//System.out.println("+++++++++++++value changed for outtouchstarttime to:"+outTouchStartTime);
+						
+					}else if(mCurrPt.getEventTime() - outTouchStartTime > 500 && !longTouchRecorded){
+							System.out.println("++++++++++long touch recorded");
+							outTouchStartTime = -1;
+							longTouchRecorded = true;
+							objectCanvas.toggleAllObjects();
+						}
+					
+				}
+			}else{
+				outTouchStartTime = -1;
+				longTouchRecorded = false;
 			}
 			break;
 
@@ -410,6 +444,9 @@ public class MultiTouchController<T> {
 				mMode = MODE_NOTHING;
 				objectCanvas.selectObject((selectedObject = null), mCurrPt, true);
 				System.out.println("+++drag ended at x:"+mCurrPt.getX()+" y:"+mCurrPt.getY());
+				dragPoint = new DragPoint(mCurrPt.getX(), mCurrPt.getY());
+				listOfDragPoints.add(dragPoint);
+				listOfDragPoints = null;
 
 			} else if (mCurrPt.isMultiTouch()) {
 				// Point 1 was already down and point 2 was just placed down
@@ -430,6 +467,9 @@ public class MultiTouchController<T> {
 					// Keep dragging, move to new point
 					performDragOrPinch();
 					//System.out.println("+++drag happened");
+					dragPoint = new DragPoint(mCurrPt.getX(), mCurrPt.getY());
+					listOfDragPoints.add(dragPoint);
+					objectCanvas.drawDragPathCaller(listOfDragPoints);
 				}
 			}
 			break;
@@ -834,5 +874,14 @@ public class MultiTouchController<T> {
 		 *            The current touch point.
 		 */
 		public void selectObject(T obj, PointInfo touchPoint, boolean recordDrag);
+		
+		
+		/**
+		 * hitesh - code to toggle multi selection on double tap
+		 */
+		public void toggleAllObjects();
+		
+		//arindam
+		public void drawDragPathCaller(ArrayList<DragPoint> listOfDragPoints);
 	}
 }

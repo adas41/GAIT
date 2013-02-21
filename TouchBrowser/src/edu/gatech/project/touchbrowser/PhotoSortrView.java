@@ -39,7 +39,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
-import android.graphics.drawable.AnimationDrawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -70,17 +69,15 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 
 	private int mUIMode = UI_MODE_ROTATE;
 
-	private boolean isAllSelected = false;
-
-	// --
+	//arindam
+	private boolean isDragPathSet = false;
+	private ArrayList<DragPoint> listOfDragPoints;
 
 	private Paint mLinePaintTouchPointCircle = new Paint();
+	private Paint mLinePaintDragPointLine = new Paint();
 	Context context;
 
-	private AnimationDrawable mDrawable;
-
-	private boolean allSelected = false;
-
+	
 	// ---------------------------------------------------------------------------------------------------
 
 	public PhotoSortrView(Context context, List<Img> resources) {
@@ -112,6 +109,14 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		mLinePaintTouchPointCircle.setStyle(Style.FILL);
 		mLinePaintTouchPointCircle.setAntiAlias(true);
 		mLinePaintTouchPointCircle.setAlpha(100);
+		setBackgroundColor(Color.rgb(47, 47, 47));
+		
+		//arindam
+		mLinePaintDragPointLine.setColor(Color.WHITE);
+		mLinePaintDragPointLine.setStrokeWidth(5);
+		mLinePaintDragPointLine.setStyle(Style.FILL);
+		mLinePaintDragPointLine.setAntiAlias(true);
+		mLinePaintDragPointLine.setAlpha(100);
 		setBackgroundColor(Color.rgb(47, 47, 47));
 
 	}
@@ -152,6 +157,8 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			mImages.get(i).draw(canvas, i);
 		if (mShowDebugInfo)
 			drawMultitouchDebugMarks(canvas);
+		if(isDragPathSet )
+			drawDragPath(canvas);
 	}
 
 	// ---------------------------------------------------------------------------------------------------
@@ -170,32 +177,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			int numPoints = currTouchPoint.getNumTouchPoints();
 			for (int i = 0; i < numPoints; i++)
 				canvas.drawCircle(xs[i], ys[i], 50 + pressures[i] * 80,
-						mLinePaintTouchPointCircle);
-			/*if (numPoints == 2)
-				canvas.drawLine(xs[0], ys[0], xs[1], ys[1],
-						mLinePaintTouchPointCircle);*/
-			if (numPoints == 5) {
-				allSelected = true;
-				for (Img img : mImages) {
-					if (img.isImgSelected() == false) {
-						allSelected = false;
-						break;
-					}
-				}
-				
-				if (allSelected)
-					for (Img img2 : mImages)
-						img2.setImgSelected(false);
-				else		
-					for (Img img2 : mImages){
-						img2.setImgSelected(true);
-						allSelected = true;
-					}
-				
-				//System.out.print(allSelected);
-				
-			}
-			
+						mLinePaintTouchPointCircle);	
 
 		}
 	}
@@ -295,6 +277,42 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 
 	public List<Img> getAllResources() {
 		return mImages;
+	}
+	
+	//hitesh
+	public void toggleAllObjects(){
+		boolean allSelected = true;
+		for (Img img : mImages) {
+			if (img.isImgSelected() == false) {
+				allSelected = false;
+				break;
+			}
+		}
+		
+		for(Img img2 : mImages){
+			img2.setImgSelected(allSelected ? false : true);
+		}
+		invalidate();
+	}
+	
+	//arindam
+	private void drawDragPath(Canvas canvas){
+		
+		for(DragPoint dp: listOfDragPoints){
+			canvas.drawCircle(dp.getX(), dp.getY(), 10, mLinePaintDragPointLine);
+		}
+		isDragPathSet = false;
+		listOfDragPoints = null;
+		invalidate();
+	}
+	
+	public void drawDragPathCaller(ArrayList<DragPoint> tempListOfDragPoints){
+		
+		if(tempListOfDragPoints.size()!=0){
+			isDragPathSet = true;
+			listOfDragPoints = tempListOfDragPoints;
+			invalidate();
+		}
 	}
 
 }
