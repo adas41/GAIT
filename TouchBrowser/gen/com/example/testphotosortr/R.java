@@ -25,6 +25,9 @@ public final class R {
         public static final int pin=0x7f02000b;
         public static final int recycle_bin=0x7f02000c;
     }
+    public static final class id {
+        public static final int ButtonTest=0x7f070000;
+    }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int activity_photo_sortr=0x7f030001;

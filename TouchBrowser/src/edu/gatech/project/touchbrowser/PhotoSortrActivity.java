@@ -92,7 +92,6 @@ OnGesturePerformedListener{
 		folders.add(folder1);
 		// Arindam
 		folder1.setBackgroundColor(Color.TRANSPARENT);
-		//folder1.setImageDrawable(getResources().getDrawable(R.drawable.pin));
 		// ----- X -----
 		Folder folder2 = new Folder(this, R.drawable.directory, IMAGES2,folderCount++);
 		folders.add(folder2);
