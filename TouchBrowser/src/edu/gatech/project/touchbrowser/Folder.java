@@ -3,7 +3,10 @@ package edu.gatech.project.touchbrowser;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.testphotosortr.R;
+
 import android.content.Context;
+import android.graphics.Color;
 import android.widget.ImageButton;
 
 public class Folder extends ImageButton {
@@ -20,6 +23,10 @@ public class Folder extends ImageButton {
 		this.setImageDrawable(getResources().getDrawable(background));
 		this.context = context;
 		this.folderId = id;
+		
+		// Arindam
+		this.setBackgroundColor(Color.TRANSPARENT);
+		// ----- X -----
 	}
 	
 	public Folder(Context context, int background, int[] initResources, int id) {

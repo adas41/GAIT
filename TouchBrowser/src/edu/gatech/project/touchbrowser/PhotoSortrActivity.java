@@ -41,7 +41,9 @@ import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.GestureOverlayView.OnGesturePerformedListener;
 import android.gesture.Prediction;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -51,6 +53,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import android.widget.RelativeLayout.LayoutParams;
 
 import com.example.testphotosortr.R;
@@ -87,10 +90,20 @@ OnGesturePerformedListener{
 		fParams.setMargins(25, 10, 25, 10);
 		Folder folder1 = new Folder(this,R.drawable.directory, IMAGES1,folderCount++);
 		folders.add(folder1);
+		// Arindam
+		folder1.setBackgroundColor(Color.TRANSPARENT);
+		//folder1.setImageDrawable(getResources().getDrawable(R.drawable.pin));
+		// ----- X -----
 		Folder folder2 = new Folder(this, R.drawable.directory, IMAGES2,folderCount++);
 		folders.add(folder2);
+		// Arindam
+		folder2.setBackgroundColor(Color.TRANSPARENT);
+		// ----- X -----
 		Folder folder3 = new Folder(this, R.drawable.directory,folderCount++);
 		folders.add(folder3);
+		// Arindam
+		folder3.setBackgroundColor(Color.TRANSPARENT);
+		// ----- X -----
 		
 		
 		flayout.addView(folder1, fParams);
@@ -111,6 +124,11 @@ OnGesturePerformedListener{
 		folder1.setOnClickListener(new View.OnClickListener() {			
 			@Override
 			public void onClick(View v) {
+				
+				// Arindam
+				Toast.makeText(getApplicationContext(), "Use the Gesture Pad to UNDO this MOVE!", Toast.LENGTH_SHORT).show();
+				// ----- X -----
+				
 				Folder clickedFolder = (Folder)v;
 				if(v != currentFolder){
 					List<Img> selectedResources = photoSorter.getSelectedresources();
@@ -174,9 +192,19 @@ OnGesturePerformedListener{
 		delete.setId(2);
 		//delParams.addRule(RelativeLayout.RIGHT_OF, folderView.getId());
 		
+		// Arindam 
+		delete.setBackgroundColor(Color.TRANSPARENT);
+		// ----- X ----
+	
+		
 		delete.setOnClickListener(new View.OnClickListener() {			
 			@Override
 			public void onClick(View v) {
+				
+				// Arindam
+				Toast.makeText(getApplicationContext(), "Use the Gesture Pad to UNDO this DELETE!", Toast.LENGTH_SHORT).show();
+				// ---- X ----
+				
 				List<Img> selectedResources = photoSorter.getSelectedresources();
 				if(selectedResources != null){
 					currentFolder.setFolderResources(photoSorter.getAllResources());
@@ -197,6 +225,13 @@ OnGesturePerformedListener{
 		GestureOverlayView gestureView = new GestureOverlayView(this);
 		gestureView.setId(4);
 		gestureView.addOnGesturePerformedListener(this);
+		
+		//Arindam
+		gestureView.bringToFront();
+		gestureView.setBackgroundColor(Color.rgb(71, 71, 71));
+		gestureView.setGestureColor(Color.WHITE);
+		// -----------------------------------------------------------------------------------------------
+		
 		gestureLib = GestureLibraries.fromRawResource(this, R.raw.gestures);
 		if (!gestureLib.load()) {
 			finish();
@@ -243,6 +278,7 @@ OnGesturePerformedListener{
 		if (prediction.score > 1.0) {
 				//undo gesture performed
 				if (prediction.name.equals("undo")) {
+					Toast.makeText(getApplicationContext(), "Use the Gesture Pad to REDO!", Toast.LENGTH_SHORT).show();
 					System.out.println("undo performed");
 					Node node = activityList.undo();
 					System.out.println("node returned:"+node);

@@ -44,6 +44,7 @@ import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 import edu.gatech.project.touchbrowser.MultiTouchController.MultiTouchObjectCanvas;
 import edu.gatech.project.touchbrowser.MultiTouchController.PointInfo;
 import edu.gatech.project.touchbrowser.MultiTouchController.PositionAndScale;
@@ -223,6 +224,9 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	 * a drag operation is starting. Called with null when drag op ends.
 	 */
 	public void selectObject(Img img, PointInfo touchPoint, boolean recordDrag) {
+		
+		//Toast.makeText(getApplicationContext(), "Tap any folder to move the images!", Toast.LENGTH_SHORT).show();
+		
 		currTouchPoint.set(touchPoint);
 		if (img != null) {
 			// Move image to the top of the stack when selected
@@ -319,9 +323,18 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
                             mPlayer.release();
             }
         });*/
+		
+		
+		// ---------------------------------------------------------------------------------
+		
 		invalidate();
 	}
 	
+	private Context getApplicationContext() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	//arindam
 	private void drawDragPath(Canvas canvas){
 		
