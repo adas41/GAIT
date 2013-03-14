@@ -11,16 +11,18 @@ public class Folder extends ImageButton {
 	List<Img> folderResources;
 	int background;
 	Context context;
+	int folderId;
 
-	public Folder(Context context, int background) {
+	public Folder(Context context, int background, int id) {
 		super(context);
 		folderResources = new ArrayList<Img>();
 		this.background = background;
 		this.setImageDrawable(getResources().getDrawable(background));
 		this.context = context;
+		this.folderId = id;
 	}
 	
-	public Folder(Context context, int background, int[] initResources) {
+	public Folder(Context context, int background, int[] initResources, int id) {
 		super(context);
 		folderResources = new ArrayList<Img>(initResources.length);
 		for(int resource : initResources){
@@ -29,6 +31,7 @@ public class Folder extends ImageButton {
 		this.background = background;
 		this.setImageDrawable(getResources().getDrawable(background));
 		this.context = context;
+		this.folderId = id;
 	}
 	
 	public boolean addResource(int resourceId){
@@ -42,7 +45,7 @@ public class Folder extends ImageButton {
 	
 	public void moveResources(List<Img> newResources){
 		for(Img img : newResources){
-			img.toggleSelected();
+			img.setImgSelected(false);
 			folderResources.add(img);
 		}
 	}
@@ -79,6 +82,20 @@ public class Folder extends ImageButton {
 	 */
 	public void setFolderResources(List<Img> folderResources) {
 		this.folderResources = folderResources;
+	}
+
+	/**
+	 * @return the folderId
+	 */
+	public int getFolderId() {
+		return folderId;
+	}
+
+	/**
+	 * @param folderId the folderId to set
+	 */
+	public void setFolderId(int folderId) {
+		this.folderId = folderId;
 	}
 	
 
