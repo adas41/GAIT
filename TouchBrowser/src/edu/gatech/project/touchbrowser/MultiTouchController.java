@@ -374,6 +374,10 @@ public class MultiTouchController<T> {
 		float newScaleX = startScaleXOverPinchWidth * mCurrPtWidth;
 		float newScaleY = startScaleYOverPinchHeight * mCurrPtHeight;
 		float newAngle = startAngleMinusPinchAngle + mCurrPtAng;
+		
+		//Arindam
+		//System.out.println("@@@@@@@@@@@@"+newAngle+"@@@@@@@@@@@@");
+		objectCanvas.drawRotationArcCaller(newAngle);
 
 		// Set the new obj coords, scale, and angle as appropriate (notifying the subclass of the change).
 		mCurrXform.set(newPosX, newPosY, newScale, newScaleX, newScaleY, newAngle);
@@ -453,6 +457,7 @@ public class MultiTouchController<T> {
 				mMode = MODE_PINCH;
 				// Restart the drag with the new drag position (that is at the midpoint between the touchpoints)
 				anchorAtThisPositionAndScale();
+				
 				// Need to let events settle before moving things, to help with event noise on touchdown
 				mSettleStartTime = mCurrPt.getEventTime();
 				mSettleEndTime = mSettleStartTime + EVENT_SETTLE_TIME_INTERVAL;
@@ -883,5 +888,7 @@ public class MultiTouchController<T> {
 		
 		//arindam
 		public void drawDragPathCaller(ArrayList<DragPoint> listOfDragPoints);
+		
+		public void drawRotationArcCaller(double angleOfRotation);
 	}
 }

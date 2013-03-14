@@ -39,6 +39,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.RectF;
+import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,10 +74,18 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	//arindam
 	private boolean isDragPathSet = false;
 	private ArrayList<DragPoint> listOfDragPoints;
-
+	
+	// Arindam
+	private boolean isRotated = false;
+	private double angleOfRotation = 0.0;
+	
+	// Arindam
 	private Paint mLinePaintTouchPointCircle = new Paint();
 	private Paint mLinePaintDragPointLine = new Paint();
 	Context context;
+	
+	//Arindam
+	MediaPlayer mPlayer;
 
 	
 	// ---------------------------------------------------------------------------------------------------
@@ -159,6 +169,8 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			drawMultitouchDebugMarks(canvas);
 		if(isDragPathSet )
 			drawDragPath(canvas);
+		if(isRotated)
+			drawRotationArc(canvas);
 	}
 
 	// ---------------------------------------------------------------------------------------------------
@@ -292,6 +304,21 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		for(Img img2 : mImages){
 			img2.setImgSelected(allSelected ? false : true);
 		}
+		
+		//Arindam
+		/*mPlayer = MediaPlayer.create(this, R.raw.undo);
+	    mPlayer.prepare();
+	    mPlayer.start();
+	    mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                // not playVideo
+                            // playVideo();
+
+                            mPlayer.release();
+            }
+        });*/
 		invalidate();
 	}
 	
@@ -306,6 +333,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		invalidate();
 	}
 	
+	//Arindam
 	public void drawDragPathCaller(ArrayList<DragPoint> tempListOfDragPoints){
 		
 		if(tempListOfDragPoints.size()!=0){
@@ -313,6 +341,31 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			listOfDragPoints = tempListOfDragPoints;
 			invalidate();
 		}
+	}
+	
+	//Arindam
+	public void drawRotationArc(Canvas canvas){
+		
+		mLinePaintDragPointLine.setTextSize(50);
+		int angle = (int)(angleOfRotation*180)%360;
+		canvas.drawText(""+angle+(char) 0x00B0, 80, 130, mLinePaintDragPointLine);
+		
+		RectF rectF = new RectF(0, 20, 200, 220);
+		canvas.drawOval(rectF, mLinePaintDragPointLine);
+		canvas.drawArc (rectF, 90, angle , true, mLinePaintDragPointLine);
+		
+		isRotated = false;
+		angleOfRotation = 0.0;
+		invalidate();
+	}
+	
+	
+	public void drawRotationArcCaller(double angle){
+		
+		angleOfRotation = angle;
+		isRotated = true;
+		invalidate();
+		
 	}
 
 }
