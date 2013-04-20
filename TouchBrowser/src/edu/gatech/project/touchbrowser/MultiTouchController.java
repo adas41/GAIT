@@ -378,6 +378,10 @@ public class MultiTouchController<T> {
 		//Arindam
 		//System.out.println("@@@@@@@@@@@@"+newAngle+"@@@@@@@@@@@@");
 		objectCanvas.drawRotationArcCaller(newAngle);
+		
+		// Arindam Apr 19
+		//System.out.println("@@@@@@@@@@@@"+newScale+"@@@@@@@@@@@@");
+		objectCanvas.drawScaleArcCaller(newScale*100);
 
 		// Set the new obj coords, scale, and angle as appropriate (notifying the subclass of the change).
 		mCurrXform.set(newPosX, newPosY, newScale, newScaleX, newScaleY, newAngle);
@@ -890,5 +894,8 @@ public class MultiTouchController<T> {
 		public void drawDragPathCaller(ArrayList<DragPoint> listOfDragPoints);
 		
 		public void drawRotationArcCaller(double angleOfRotation);
+		
+		// Arindam Apr 19
+		public void drawScaleArcCaller(double percentOfScale);
 	}
 }

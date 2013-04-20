@@ -42,19 +42,32 @@ import android.gesture.GestureOverlayView;
 import android.gesture.GestureOverlayView.OnGesturePerformedListener;
 import android.gesture.Prediction;
 import android.graphics.Color;
+import android.graphics.Path;
+import android.graphics.PathMeasure;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.testphotosortr.R;
 
@@ -74,7 +87,17 @@ OnGesturePerformedListener{
 	List<Folder> folders;
 	int folderCount;
 	ImageButton delete;
+
+	// Arindam Apr 12
+	GestureDetector gestureDetector;
+	OnTouchListener gestureListener;
+	private boolean isGesturePadVisible = false;
 	
+	// Arindam Apr 19
+	ImageView image;
+
+	// -----------------------------------------------------------------------------------------------------------
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		
@@ -88,55 +111,83 @@ OnGesturePerformedListener{
 		LinearLayout flayout = new LinearLayout(this);
 		LinearLayout.LayoutParams fParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,60);
 		fParams.setMargins(25, 10, 25, 10);
-		Folder folder1 = new Folder(this,R.drawable.directory, IMAGES1,folderCount++);
+		Folder folder1 = new Folder(getApplicationContext(),R.drawable.directory, IMAGES1,folderCount++,String.valueOf(folderCount));
 		folders.add(folder1);
 		// Arindam
-		folder1.setBackgroundColor(Color.TRANSPARENT);
+		//folder1.setBackgroundColor(Color.TRANSPARENT);
 		// ----- X -----
-		Folder folder2 = new Folder(this, R.drawable.directory, IMAGES2,folderCount++);
+		Folder folder2 = new Folder(getApplicationContext(), R.drawable.directory, IMAGES2,folderCount++,String.valueOf(folderCount));
 		folders.add(folder2);
 		// Arindam
-		folder2.setBackgroundColor(Color.TRANSPARENT);
+		//folder2.setBackgroundColor(Color.TRANSPARENT);
 		// ----- X -----
-		Folder folder3 = new Folder(this, R.drawable.directory,folderCount++);
+		Folder folder3 = new Folder(this, R.drawable.directory,folderCount++,String.valueOf(folderCount));
 		folders.add(folder3);
 		// Arindam
-		folder3.setBackgroundColor(Color.TRANSPARENT);
+		//folder3.setBackgroundColor(Color.TRANSPARENT);
 		// ----- X -----
 		
+		Button b = new Button(getApplicationContext());
+		b.setBackgroundDrawable(getResources().getDrawable(R.drawable.directory));
+		b.setText("hello");
+		flayout.addView(b, fParams);
 		
 		flayout.addView(folder1, fParams);
 		flayout.addView(folder2, fParams);
 		flayout.addView(folder3, fParams);
 		for(int i =0; i < 20; i++){
-			Folder folder = new Folder(this,R.drawable.directory, folderCount++);
+			Folder folder = new Folder(this,R.drawable.directory, folderCount++,String.valueOf(folderCount));
 			//folder.setImageDrawable(getResources().getDrawable(R.drawable.directory));
 			folders.add(folder);
 			flayout.addView(folder, fParams);
 		}
-		int width = (int)((WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getWidth();
-		int height = (int)((WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay().getHeight();
+		int width = (int) ((WindowManager) getApplicationContext()
+				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
+				.getWidth();
+		int height = (int) ((WindowManager) getApplicationContext()
+				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
+				.getHeight();
+
+		// Arindam Apr 12
+		LayoutInflater inflater = getLayoutInflater();
+		View layout = inflater.inflate(R.layout.toast_layout,
+				(ViewGroup) findViewById(R.id.toast_layout_root));
+		layout.setLayoutParams(new LinearLayout.LayoutParams(500, 200));
+		layout.setBackgroundColor(Color.TRANSPARENT);
+
+		image = (ImageView) layout.findViewById(R.id.hand);
+		image.setImageResource(R.drawable.hand);
+		TextView text = (TextView) layout.findViewById(R.id.text);
+		text.setText("Use the gesture pad to undo this move!");
+
 		
-		
-		
+
+		final Toast customToast = new Toast(getApplicationContext());
+		customToast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+		customToast.setDuration(Toast.LENGTH_SHORT);
+		customToast.setView(layout);
 		
 		folder1.setOnClickListener(new View.OnClickListener() {			
 			@Override
 			public void onClick(View v) {
 				
-				// Arindam
-				Toast.makeText(getApplicationContext(), "Use the Gesture Pad to UNDO this MOVE!", Toast.LENGTH_SHORT).show();
-				// ----- X -----
-				
+							
 				Folder clickedFolder = (Folder)v;
 				if(v != currentFolder){
-					List<Img> selectedResources = photoSorter.getSelectedresources();
 					currentFolder.setFolderResources(photoSorter.getAllResources());
+					List<Img> selectedResources = photoSorter.getSelectedresources();
+					
 					if(selectedResources != null){
+							// Arindam
+						customToast.show();
+						setAnimation(image);
+						// ----- X -----
 						clickedFolder.moveResources(selectedResources);
 						currentFolder.removeResources(selectedResources);
 						photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
 						activityList.addActivity(new Node(ActivityType.MOVE, currentFolder.getFolderId(), clickedFolder.getFolderId(), selectedResources));
+						//animation
+						performAnimation(selectedResources, v);
 						
 					}else{
 						photoSorter.loadAgain(getApplicationContext(),clickedFolder.getFolderResources());
@@ -154,10 +205,15 @@ OnGesturePerformedListener{
 					List<Img> selectedResources = photoSorter.getSelectedresources();
 					currentFolder.setFolderResources(photoSorter.getAllResources());
 					if(selectedResources != null){
+							// Arindam
+						customToast.show();
+						setAnimation(image);
+						// ----- X -----
 						clickedFolder.moveResources(selectedResources);
 						currentFolder.removeResources(selectedResources);
 						photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
 						activityList.addActivity(new Node(ActivityType.MOVE, currentFolder.getFolderId(), clickedFolder.getFolderId(), selectedResources));
+						performAnimation(selectedResources, v);
 					}else{
 						photoSorter.loadAgain(getApplicationContext(),clickedFolder.getFolderResources());
 						currentFolder = clickedFolder;
@@ -201,27 +257,35 @@ OnGesturePerformedListener{
 			public void onClick(View v) {
 				
 				// Arindam
-				Toast.makeText(getApplicationContext(), "Use the Gesture Pad to UNDO this DELETE!", Toast.LENGTH_SHORT).show();
-				// ---- X ----
-				
-				List<Img> selectedResources = photoSorter.getSelectedresources();
-				if(selectedResources != null){
-					currentFolder.setFolderResources(photoSorter.getAllResources());
+				customToast.show();
+				setAnimation(image);
+				// ----- X -----
+
+				List<Img> selectedResources = photoSorter
+						.getSelectedresources();
+				if (selectedResources != null) {
+					currentFolder.setFolderResources(photoSorter
+							.getAllResources());
 					currentFolder.removeResources(selectedResources);
 					photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
 					activityList.addActivity(new Node(ActivityType.DELETE, currentFolder.getFolderId(), selectedResources));
+					performAnimation(selectedResources, v);
 				}
 				
 			}
 		});
-		
-		//gesture view
-		RelativeLayout.LayoutParams gestureParams = new RelativeLayout.LayoutParams(width*1/4,200);
-		gestureParams.leftMargin = width*3/4;
-		gestureParams.topMargin = 500;
-		//gestureParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, photoSorter.getId());
-        
-		GestureOverlayView gestureView = new GestureOverlayView(this);
+
+		// gesture view
+		final RelativeLayout.LayoutParams gestureParams = new RelativeLayout.LayoutParams(
+				width * 1 / 4, 200);
+		gestureParams.leftMargin = width * 3 / 4;
+		gestureParams.topMargin = 475;
+		gestureParams.bottomMargin = 75;
+		gestureParams.rightMargin = 75;
+		// gestureParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,
+		// photoSorter.getId());
+
+		final GestureOverlayView gestureView = new GestureOverlayView(this);
 		gestureView.setId(4);
 		gestureView.addOnGesturePerformedListener(this);
 		
@@ -229,6 +293,56 @@ OnGesturePerformedListener{
 		gestureView.bringToFront();
 		gestureView.setBackgroundColor(Color.rgb(71, 71, 71));
 		gestureView.setGestureColor(Color.WHITE);
+
+		// Arindam Apr 12
+		int swipeViewWidth = (int) (width * 0.25 + 250);
+
+		// swipe view
+		final RelativeLayout.LayoutParams swipeViewParams = new RelativeLayout.LayoutParams(
+				swipeViewWidth, 650);
+		swipeViewParams.leftMargin = width * 3 / 4 - 100;
+		swipeViewParams.topMargin = 400;
+
+		final TextView swipeView = new TextView(this);
+		// swipeView.setBackgroundColor(Color.BLUE);
+		swipeView.setId(5);
+
+		swipeView.setOnTouchListener(new SwipeGesture() {
+			public void onSwipeTop() {
+				Toast.makeText(PhotoSortrActivity.this, "top",
+						Toast.LENGTH_SHORT).show();
+				// add swipe and gesture view here
+				//containerLayout.addView(swipeView, 3, swipeViewParams);
+				containerLayout.addView(gestureView, 4, gestureParams);
+				isGesturePadVisible = true;
+			}
+
+			public void onSwipeRight() {
+				Toast.makeText(PhotoSortrActivity.this, "right",
+						Toast.LENGTH_SHORT).show();
+				// remove swipe and gesture view
+				containerLayout.removeView(gestureView);
+				//containerLayout.removeView(swipeView);
+				isGesturePadVisible = false;
+			}
+
+			public void onSwipeLeft() {
+				Toast.makeText(PhotoSortrActivity.this, "left",
+						Toast.LENGTH_SHORT).show();
+				//containerLayout.addView(swipeView, 3, swipeViewParams);
+				containerLayout.addView(gestureView, 4, gestureParams);
+				isGesturePadVisible = true;
+			}
+
+			public void onSwipeBottom() {
+				Toast.makeText(PhotoSortrActivity.this, "bottom",
+						Toast.LENGTH_SHORT).show();
+				containerLayout.removeView(gestureView);
+				//containerLayout.removeView(swipeView);
+				isGesturePadVisible = false;
+			}
+		});
+
 		// -----------------------------------------------------------------------------------------------
 		
 		gestureLib = GestureLibraries.fromRawResource(this, R.raw.gestures);
@@ -241,11 +355,22 @@ OnGesturePerformedListener{
 		containerLayout.addView(folderView, 0, folderParams);
 		containerLayout.addView(delete,1,delParams);
 		containerLayout.addView(photoSorter, 2, photoParams);
-		containerLayout.addView(gestureView,3,gestureParams);
 		
+		// Arindam Apr 12
+		containerLayout.addView(swipeView, 3, swipeViewParams); 
+		// containerLayout.addView(gestureView,4,gestureParams);
+
 		setContentView(containerLayout);
 	}
-	
+
+	// Arindam Apr 19
+	public void setAnimation(ImageView image) {
+		TranslateAnimation translate;
+		translate = new TranslateAnimation(0, 900, 0, 0);
+		translate.setDuration(6000);
+		image.setAnimation(translate);
+	}
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -294,7 +419,54 @@ OnGesturePerformedListener{
 							List<Img> delresources = node.objChanged;
 							currentFolder = getFolder(node.currentFolder);
 							currentFolder.moveResources(delresources);
-							photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
+							TranslateAnimation transform;
+							 ScaleAnimation scale;
+							 AnimationSet animation;
+							 
+							for(int i = 0;i < delresources.size();i++){
+								Img img = delresources.get(i);
+								animation = new AnimationSet(false);
+								int[] location = new int[2];
+								delete.getLocationOnScreen(location);
+								transform = new TranslateAnimation(Animation.ABSOLUTE,location[0], Animation.ABSOLUTE,img.getCenterX(),Animation.ABSOLUTE, location[1],Animation.ABSOLUTE,img.getCenterY());
+								//transform = new TranslateAnimation(location[0], img.getCenterX(), location[1],img.getCenterY());
+								transform.setDuration(600);
+								transform.setFillBefore(true);
+								transform.setFillAfter(true);
+								//transform.setInterpolator(new LinearInterpolator());
+								animation.addAnimation(transform);
+								/*scale = new ScaleAnimation(1, 2, 1,2);
+								scale.setDuration(600);
+								animation.addAnimation(scale);*/
+								
+								final ImageView view = new ImageView(getApplicationContext());
+								view.setImageDrawable(img.getDrawable());
+								//view.setAdjustViewBounds(true);
+								LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams((int)(img.getMaxX()-img.getMinX()),(int)(img.getMaxY()-img.getMinY()));
+								lp.topMargin = location[1];
+								lp.leftMargin = location[0];
+								view.setLayoutParams(lp);
+								view.setAdjustViewBounds(true);
+								containerLayout.addView(view);
+								/*MyTranslateAnimation anim = new MyTranslateAnimation(view, location[0], img.getMaxX(), location[1],img.getMaxY());          
+								anim.setDuration(1000);*/
+					           view.startAnimation(transform);
+					          
+					           
+					           view.postDelayed(new Runnable(){
+					           	public void run(){
+					           		containerLayout.removeView(view);
+					           	}
+					           }, 1000);
+					           view.postDelayed(new Runnable(){
+						           	public void run(){
+						           		photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
+						           	}
+						           }, 2000);
+					           
+							}
+							 //performUndoAnimation(delresources, delete);
+							//photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
 							break;
 							
 						}
@@ -313,18 +485,121 @@ OnGesturePerformedListener{
 							currentFolder = getFolder(node.currentFolder);
 							currentFolder.removeResources(resources);
 							photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
+							performAnimation(resources, getFolder(node.folderChanged));
 							break;
 						case DELETE:
 							List<Img> delresources = node.objChanged;
 							currentFolder = getFolder(node.currentFolder);
 							currentFolder.removeResources(delresources);
 							photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
+							performAnimation(delresources, delete);
 							break;
 							
 						}
 					}
 				}
 					
+		}
+	}
+	
+	public void performAnimation(List<Img> resources, View v){
+		TranslateAnimation transform;
+		 ScaleAnimation scale;
+		 AnimationSet animation;
+		 
+		for(Img img : resources){
+			animation = new AnimationSet(false);
+			int[] location = new int[2];
+			v.getLocationOnScreen(location);
+			transform = new TranslateAnimation(Animation.ABSOLUTE,img.getCenterX(), Animation.ABSOLUTE,location[0]*1/0.4f,Animation.ABSOLUTE, img.getCenterY(),Animation.ABSOLUTE,location[1]*1/0.4f);
+			transform.setDuration(1000);
+			animation.addAnimation(transform);
+			scale = new ScaleAnimation(1, (float)0.4, 1,(float)0.4);
+			scale.setDuration(1000);
+			animation.addAnimation(scale);
+			
+			final ImageView view = new ImageView(getApplicationContext());
+			view.setImageDrawable(img.getDrawable());
+			view.setAdjustViewBounds(true);
+			view.setLayoutParams(new LinearLayout.LayoutParams((int)(img.getMaxX()-img.getMinX()),(int)(img.getMaxY()-img.getMinY())));
+			containerLayout.addView(view);
+			           
+           view.startAnimation(animation);
+          
+           
+           view.postDelayed(new Runnable(){
+           	public void run(){
+           		containerLayout.removeView(view);
+           	}
+           }, 1000);
+           
+		}
+	}
+	
+	public class MyTranslateAnimation extends Animation {
+        private float fromXDelta;
+        private float fromYDelta;
+        private float toXDelta;
+        private float toYDelta;
+        private View view;
+
+        public MyTranslateAnimation(View view, float fromXDelta,
+                float toXDelta, float fromYDelta, float toYDelta) {
+            this.view = view;
+            this.fromXDelta = fromXDelta;
+            this.toXDelta = toXDelta;
+            this.fromYDelta = fromYDelta;
+            this.toYDelta = toYDelta;
+        }
+
+        @Override
+        protected void applyTransformation(float interpolatedTime,
+                Transformation t) {
+            //Log.d("united", "time " + interpolatedTime);
+            float newX = (toXDelta - fromXDelta);
+            float newY = (toYDelta - fromYDelta);
+            LayoutParams p = (LayoutParams) view.getLayoutParams();
+            p.leftMargin = (int) newX;
+            p.topMargin = (int) newY;
+            if (interpolatedTime > 0.0 && view.getVisibility() == View.GONE) {
+                view.setVisibility(View.VISIBLE);
+            }
+            view.requestLayout();
+        }
+    }
+	
+	public void performUndoAnimation(List<Img> resources, View v){
+		TranslateAnimation transform;
+		 ScaleAnimation scale;
+		 AnimationSet animation;
+		 
+		for(Img img : resources){
+			animation = new AnimationSet(false);
+			int[] location = new int[2];
+			v.getLocationOnScreen(location);
+			transform = new TranslateAnimation(Animation.ABSOLUTE,location[0]*1/1.4f, Animation.ABSOLUTE,img.getCenterX(),Animation.ABSOLUTE, location[1]*1/1.4f,Animation.ABSOLUTE,img.getCenterY());
+			transform.setDuration(600);
+			transform.setInterpolator(new LinearInterpolator());
+			animation.addAnimation(transform);
+			scale = new ScaleAnimation(1, (float)1.4, 1,(float)1.4);
+			scale.setDuration(600);
+			animation.addAnimation(scale);
+			
+			final ImageView view = new ImageView(getApplicationContext());
+			view.setImageDrawable(img.getDrawable());
+			view.setAdjustViewBounds(true);
+			view.setLayoutParams(new LinearLayout.LayoutParams((int)(img.getMaxX()-img.getMinX()),(int)(img.getMaxY()-img.getMinY())));
+			containerLayout.addView(view);
+			           
+           view.startAnimation(animation);
+          
+           
+           view.postDelayed(new Runnable(){
+           	public void run(){
+           		containerLayout.removeView(view);
+           	}
+           }, 1000);
+           
 		}
 	}
 	

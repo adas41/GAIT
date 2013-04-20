@@ -80,6 +80,10 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	private boolean isRotated = false;
 	private double angleOfRotation = 0.0;
 	
+	// Arindam Apr 19
+	private boolean isScaled = false;
+	private double percentOfScale = 0.0;
+	
 	// Arindam
 	private Paint mLinePaintTouchPointCircle = new Paint();
 	private Paint mLinePaintDragPointLine = new Paint();
@@ -172,6 +176,9 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			drawDragPath(canvas);
 		if(isRotated)
 			drawRotationArc(canvas);
+		// Arindam Apr 19
+		if(isScaled)
+			drawScaleArc(canvas);
 	}
 
 	// ---------------------------------------------------------------------------------------------------
@@ -359,9 +366,9 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	//Arindam
 	public void drawRotationArc(Canvas canvas){
 		
-		mLinePaintDragPointLine.setTextSize(50);
+		mLinePaintDragPointLine.setTextSize(40);
 		int angle = (int)(angleOfRotation*180)%360;
-		canvas.drawText(""+angle+(char) 0x00B0, 80, 130, mLinePaintDragPointLine);
+		canvas.drawText(""+angle+(char) 0x00B0, 75, 140, mLinePaintDragPointLine);
 		
 		RectF rectF = new RectF(0, 20, 200, 220);
 		canvas.drawOval(rectF, mLinePaintDragPointLine);
@@ -377,6 +384,34 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		
 		angleOfRotation = angle;
 		isRotated = true;
+		invalidate();
+		
+	}
+	
+	// Arindam Apr 19
+	public void drawScaleArc(Canvas canvas){
+		
+		mLinePaintDragPointLine.setTextSize(40);
+		int scale = (int)(percentOfScale <= 200 ? percentOfScale : 200);
+		canvas.drawText(""+scale+"%", 60, 340, mLinePaintDragPointLine);
+		
+		RectF rectF = new RectF(0, 230, 200, 430);
+		canvas.drawOval(rectF, mLinePaintDragPointLine);
+		//canvas.drawArc (rectF, 90, scale , true, mLinePaintDragPointLine);
+		canvas.drawCircle(100, 330, scale/2, mLinePaintDragPointLine);
+		
+		isScaled = false;
+		percentOfScale = 0.0;
+		invalidate();
+	}
+	
+	// Arindam Apr 19
+	@Override
+	public void drawScaleArcCaller(double percent) {
+		// TODO Auto-generated method stub
+		
+		percentOfScale = percent;
+		isScaled = true;
 		invalidate();
 		
 	}

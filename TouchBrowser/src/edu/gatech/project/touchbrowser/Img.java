@@ -1,5 +1,6 @@
 package edu.gatech.project.touchbrowser;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -112,8 +113,8 @@ class Img extends ImageView {
 	private boolean setPos(float centerX, float centerY, float scaleX, float scaleY, float angle) {
 		float ws = (width / 2) * scaleX, hs = (height / 2) * scaleY;
 		float newMinX = centerX - ws, newMinY = centerY - hs, newMaxX = centerX + ws, newMaxY = centerY + hs;
-		if (newMinX > displayWidth - SCREEN_MARGIN || newMaxX < SCREEN_MARGIN || newMinY > displayHeight - SCREEN_MARGIN
-				|| newMaxY < SCREEN_MARGIN)
+		if (centerX > displayWidth || centerX < 0 || centerY > 650
+				|| centerY < 0 || (newMaxX > 950 && newMaxY > 420))
 			return false;
 		this.centerX = centerX;
 		this.centerY = centerY;
@@ -191,10 +192,12 @@ class Img extends ImageView {
 		return centerY;
 	}
 
+	@SuppressLint("Override")
 	public float getScaleX() {
 		return scaleX;
 	}
 
+	@SuppressLint("Override")
 	public float getScaleY() {
 		return scaleY;
 	}

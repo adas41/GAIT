@@ -3,42 +3,46 @@ package edu.gatech.project.touchbrowser;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.testphotosortr.R;
-
 import android.content.Context;
 import android.graphics.Color;
-import android.widget.ImageButton;
+import android.widget.Button;
 
-public class Folder extends ImageButton {
+public class Folder extends Button {
 	
 	List<Img> folderResources;
 	int background;
 	Context context;
 	int folderId;
+	String name;
+	Button b;
 
-	public Folder(Context context, int background, int id) {
+	public Folder(Context context, int background, int id, String name) {
 		super(context);
 		folderResources = new ArrayList<Img>();
 		this.background = background;
-		this.setImageDrawable(getResources().getDrawable(background));
+		this.setBackgroundDrawable(getResources().getDrawable(background));
 		this.context = context;
 		this.folderId = id;
+		this.name = name;
+		this.setText(name);
 		
 		// Arindam
-		this.setBackgroundColor(Color.TRANSPARENT);
+		//this.setBackgroundColor(Color.TRANSPARENT);
 		// ----- X -----
 	}
 	
-	public Folder(Context context, int background, int[] initResources, int id) {
+	public Folder(Context context, int background, int[] initResources, int id, String name) {
 		super(context);
 		folderResources = new ArrayList<Img>(initResources.length);
 		for(int resource : initResources){
 			folderResources.add(new Img(context,resource,context.getResources()));
 		}
 		this.background = background;
-		this.setImageDrawable(getResources().getDrawable(background));
+		this.setBackgroundDrawable(getResources().getDrawable(background));
 		this.context = context;
 		this.folderId = id;
+		this.name = name;
+		this.setText(name);
 	}
 	
 	public boolean addResource(int resourceId){
@@ -103,6 +107,20 @@ public class Folder extends ImageButton {
 	 */
 	public void setFolderId(int folderId) {
 		this.folderId = folderId;
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 
