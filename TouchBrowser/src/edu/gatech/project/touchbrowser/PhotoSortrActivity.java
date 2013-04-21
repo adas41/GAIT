@@ -42,8 +42,8 @@ import android.gesture.GestureOverlayView;
 import android.gesture.GestureOverlayView.OnGesturePerformedListener;
 import android.gesture.Prediction;
 import android.graphics.Color;
-import android.graphics.Path;
-import android.graphics.PathMeasure;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -87,8 +87,10 @@ OnGesturePerformedListener{
 	List<Folder> folders;
 	int folderCount;
 	ImageButton delete;
+	FolderTouch folderTouchListener;
 
 	// Arindam Apr 12
+	Toast customToast;
 	GestureDetector gestureDetector;
 	OnTouchListener gestureListener;
 	private boolean isGesturePadVisible = false;
@@ -107,25 +109,21 @@ OnGesturePerformedListener{
 		activityList = new ActivityHolder();
 		folders = new ArrayList<Folder>();
 		folderCount = 0;
+		folderTouchListener = new FolderTouch();
 		
 		LinearLayout flayout = new LinearLayout(this);
 		LinearLayout.LayoutParams fParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,60);
 		fParams.setMargins(25, 10, 25, 10);
 		Folder folder1 = new Folder(getApplicationContext(),R.drawable.directory, IMAGES1,folderCount++,String.valueOf(folderCount));
+		setFolderSelected(folder1);
+		folder1.setOnClickListener(folderTouchListener);
 		folders.add(folder1);
 		// Arindam
 		//folder1.setBackgroundColor(Color.TRANSPARENT);
 		// ----- X -----
 		Folder folder2 = new Folder(getApplicationContext(), R.drawable.directory, IMAGES2,folderCount++,String.valueOf(folderCount));
+		folder2.setOnClickListener(folderTouchListener);
 		folders.add(folder2);
-		// Arindam
-		//folder2.setBackgroundColor(Color.TRANSPARENT);
-		// ----- X -----
-		Folder folder3 = new Folder(this, R.drawable.directory,folderCount++,String.valueOf(folderCount));
-		folders.add(folder3);
-		// Arindam
-		//folder3.setBackgroundColor(Color.TRANSPARENT);
-		// ----- X -----
 		
 		Button b = new Button(getApplicationContext());
 		b.setBackgroundDrawable(getResources().getDrawable(R.drawable.directory));
@@ -134,10 +132,10 @@ OnGesturePerformedListener{
 		
 		flayout.addView(folder1, fParams);
 		flayout.addView(folder2, fParams);
-		flayout.addView(folder3, fParams);
+		//flayout.addView(folder3, fParams);
 		for(int i =0; i < 20; i++){
 			Folder folder = new Folder(this,R.drawable.directory, folderCount++,String.valueOf(folderCount));
-			//folder.setImageDrawable(getResources().getDrawable(R.drawable.directory));
+			folder.setOnClickListener(folderTouchListener);
 			folders.add(folder);
 			flayout.addView(folder, fParams);
 		}
@@ -160,67 +158,10 @@ OnGesturePerformedListener{
 		TextView text = (TextView) layout.findViewById(R.id.text);
 		text.setText("Use the gesture pad to undo this move!");
 
-		
-
-		final Toast customToast = new Toast(getApplicationContext());
+		customToast = new Toast(getApplicationContext());
 		customToast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
 		customToast.setDuration(Toast.LENGTH_SHORT);
 		customToast.setView(layout);
-		
-		folder1.setOnClickListener(new View.OnClickListener() {			
-			@Override
-			public void onClick(View v) {
-				
-							
-				Folder clickedFolder = (Folder)v;
-				if(v != currentFolder){
-					currentFolder.setFolderResources(photoSorter.getAllResources());
-					List<Img> selectedResources = photoSorter.getSelectedresources();
-					
-					if(selectedResources != null){
-							// Arindam
-						customToast.show();
-						setAnimation(image);
-						// ----- X -----
-						clickedFolder.moveResources(selectedResources);
-						currentFolder.removeResources(selectedResources);
-						photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
-						activityList.addActivity(new Node(ActivityType.MOVE, currentFolder.getFolderId(), clickedFolder.getFolderId(), selectedResources));
-						//animation
-						performAnimation(selectedResources, v);
-						
-					}else{
-						photoSorter.loadAgain(getApplicationContext(),clickedFolder.getFolderResources());
-						currentFolder = clickedFolder;
-					}
-				}
-			}
-		});
-		
-		folder2.setOnClickListener(new View.OnClickListener() {			
-			@Override
-			public void onClick(View v) {
-				Folder clickedFolder = (Folder)v;
-				if(v != currentFolder){
-					List<Img> selectedResources = photoSorter.getSelectedresources();
-					currentFolder.setFolderResources(photoSorter.getAllResources());
-					if(selectedResources != null){
-							// Arindam
-						customToast.show();
-						setAnimation(image);
-						// ----- X -----
-						clickedFolder.moveResources(selectedResources);
-						currentFolder.removeResources(selectedResources);
-						photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
-						activityList.addActivity(new Node(ActivityType.MOVE, currentFolder.getFolderId(), clickedFolder.getFolderId(), selectedResources));
-						performAnimation(selectedResources, v);
-					}else{
-						photoSorter.loadAgain(getApplicationContext(),clickedFolder.getFolderResources());
-						currentFolder = clickedFolder;
-					}
-				}
-			}
-		});
 		
 		photoSorter = new PhotoSortrView(this,folder1.getFolderResources());
 		currentFolder = folders.get(0);
@@ -450,7 +391,7 @@ OnGesturePerformedListener{
 								containerLayout.addView(view);
 								/*MyTranslateAnimation anim = new MyTranslateAnimation(view, location[0], img.getMaxX(), location[1],img.getMaxY());          
 								anim.setDuration(1000);*/
-					           view.startAnimation(transform);
+					           view.setAnimation(transform);
 					          
 					           
 					           view.postDelayed(new Runnable(){
@@ -500,6 +441,44 @@ OnGesturePerformedListener{
 				}
 					
 		}
+	}
+	
+	class FolderTouch implements View.OnClickListener{
+		
+		@Override
+		public void onClick(View v) {
+			Folder clickedFolder = (Folder)v;
+			if(v != currentFolder){
+				List<Img> selectedResources = photoSorter.getSelectedresources();
+				currentFolder.setFolderResources(photoSorter.getAllResources());
+				if(selectedResources != null){
+						// Arindam
+					customToast.show();
+					setAnimation(image);
+					// ----- X -----
+					clickedFolder.moveResources(selectedResources);
+					currentFolder.removeResources(selectedResources);
+					photoSorter.loadAgain(getApplicationContext(),currentFolder.getFolderResources());
+					activityList.addActivity(new Node(ActivityType.MOVE, currentFolder.getFolderId(), clickedFolder.getFolderId(), selectedResources));
+					performAnimation(selectedResources, v);
+				}else{
+					setFolderSelected(clickedFolder);
+					currentFolder.setBackgroundDrawable(getResources().getDrawable(currentFolder.background));
+					photoSorter.loadAgain(getApplicationContext(),clickedFolder.getFolderResources());
+					currentFolder = clickedFolder;
+				}
+			}
+		}
+	}
+	
+	public void setFolderSelected(Folder folder){
+		
+		folder.setBackgroundColor(Color.YELLOW);
+		Drawable back = folder.getBackground();
+		Drawable front = getResources().getDrawable(folder.background);
+		Drawable[] drawableLayers = { back, front };
+		LayerDrawable ld = new LayerDrawable(drawableLayers);
+		folder.setBackgroundDrawable(ld);
 	}
 	
 	public void performAnimation(List<Img> resources, View v){
