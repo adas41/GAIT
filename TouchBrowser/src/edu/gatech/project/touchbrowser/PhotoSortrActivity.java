@@ -34,7 +34,9 @@ import java.util.Collections;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
@@ -50,6 +52,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -60,6 +63,7 @@ import android.view.animation.ScaleAnimation;
 import android.view.animation.Transformation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -111,8 +115,8 @@ OnGesturePerformedListener{
 		folderCount = 0;
 		folderTouchListener = new FolderTouch();
 		
-		LinearLayout flayout = new LinearLayout(this);
-		LinearLayout.LayoutParams fParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,60);
+		final LinearLayout flayout = new LinearLayout(this);
+		final LinearLayout.LayoutParams fParams = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,60);
 		fParams.setMargins(25, 10, 25, 10);
 		Folder folder1 = new Folder(getApplicationContext(),R.drawable.directory, IMAGES1,folderCount++,String.valueOf(folderCount));
 		setFolderSelected(folder1);
@@ -165,11 +169,11 @@ OnGesturePerformedListener{
 		
 		photoSorter = new PhotoSortrView(this,folder1.getFolderResources());
 		currentFolder = folders.get(0);
-		photoSorter.setId(3);
+		photoSorter.setId(4);
 		folderView = new HorizontalScrollView(this);
-		folderView.setId(1);
-		RelativeLayout.LayoutParams folderParams = new RelativeLayout.LayoutParams(width * 7/8,LayoutParams.WRAP_CONTENT);
-		folderParams.leftMargin = 0;
+		folderView.setId(2);
+		RelativeLayout.LayoutParams folderParams = new RelativeLayout.LayoutParams(width * 7/9,LayoutParams.WRAP_CONTENT);
+		folderParams.leftMargin = width*1/9;
 		folderParams.topMargin = 0;
 		
 		
@@ -180,12 +184,49 @@ OnGesturePerformedListener{
 		
 		folderView.addView(flayout);
 		
+		//new folder button
+		ImageButton newFolder = new ImageButton(this);
+		newFolder.setImageDrawable(getResources().getDrawable(R.drawable.gallery));
+		RelativeLayout.LayoutParams newFolderParams = new RelativeLayout.LayoutParams(width * 1/9,60);
+		newFolderParams.setMargins(0, 10, 25, 10);
+		newFolderParams.addRule(RelativeLayout.LEFT_OF, folderView.getId());
+		newFolder.setId(1);
+		newFolder.setBackgroundColor(Color.TRANSPARENT);
+		
+		newFolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               
+                final AlertDialog alertDialog = new AlertDialog.Builder(PhotoSortrActivity.this).create();
+                alertDialog.setTitle("Create new folder");
+                final EditText folderName = new EditText(PhotoSortrActivity.this);
+                alertDialog.setView(folderName);
+               
+                alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Submit", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Toast.makeText(PhotoSortrActivity.this, "New folder created: "+folderName.getText(),
+                                Toast.LENGTH_SHORT).show();
+                        Folder newFolder = new Folder(getApplicationContext(),R.drawable.directory, folderCount++,folderName.getText().toString());
+                        newFolder.setOnClickListener(folderTouchListener);
+            			folders.add(newFolder);
+            			flayout.addView(newFolder,0, fParams);
+                  } });
+               
+                alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        alertDialog.dismiss();
+                  } });
+               
+                alertDialog.show();
+            }
+        });
+		
 		//delete icon
 		delete = new ImageButton(this);
 		delete.setImageDrawable(getResources().getDrawable(R.drawable.recycle_bin));
-		RelativeLayout.LayoutParams delParams = new RelativeLayout.LayoutParams(width * 7/8,60);
-		delParams.setMargins(width * 7/8 + 25, 10, 25, 10);
-		delete.setId(2);
+		RelativeLayout.LayoutParams delParams = new RelativeLayout.LayoutParams(width * 1/9,60);
+		delParams.setMargins(width * 8/9 , 10, 25, 10);
+		delete.setId(3);
 		//delParams.addRule(RelativeLayout.RIGHT_OF, folderView.getId());
 		
 		// Arindam 
@@ -227,7 +268,7 @@ OnGesturePerformedListener{
 		// photoSorter.getId());
 
 		final GestureOverlayView gestureView = new GestureOverlayView(this);
-		gestureView.setId(4);
+		gestureView.setId(5);
 		gestureView.addOnGesturePerformedListener(this);
 		
 		//Arindam
@@ -254,7 +295,7 @@ OnGesturePerformedListener{
 						Toast.LENGTH_SHORT).show();
 				// add swipe and gesture view here
 				//containerLayout.addView(swipeView, 3, swipeViewParams);
-				containerLayout.addView(gestureView, 4, gestureParams);
+				containerLayout.addView(gestureView, 5, gestureParams);
 				isGesturePadVisible = true;
 			}
 
@@ -271,7 +312,7 @@ OnGesturePerformedListener{
 				Toast.makeText(PhotoSortrActivity.this, "left",
 						Toast.LENGTH_SHORT).show();
 				//containerLayout.addView(swipeView, 3, swipeViewParams);
-				containerLayout.addView(gestureView, 4, gestureParams);
+				containerLayout.addView(gestureView, 5, gestureParams);
 				isGesturePadVisible = true;
 			}
 
@@ -292,13 +333,13 @@ OnGesturePerformedListener{
 		}
 		
 		
-		
-		containerLayout.addView(folderView, 0, folderParams);
-		containerLayout.addView(delete,1,delParams);
-		containerLayout.addView(photoSorter, 2, photoParams);
+		containerLayout.addView(newFolder, 0,newFolderParams);
+		containerLayout.addView(folderView, 1, folderParams);
+		containerLayout.addView(delete,2,delParams);
+		containerLayout.addView(photoSorter, 3, photoParams);
 		
 		// Arindam Apr 12
-		containerLayout.addView(swipeView, 3, swipeViewParams); 
+		containerLayout.addView(swipeView, 4, swipeViewParams); 
 		// containerLayout.addView(gestureView,4,gestureParams);
 
 		setContentView(containerLayout);
