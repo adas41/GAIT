@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.widget.Button;
 
 public class Folder extends Button {
@@ -47,6 +47,10 @@ public class Folder extends Button {
 	
 	public boolean addResource(int resourceId){
 		return folderResources.add(new Img(context,resourceId,context.getResources()));
+	}
+	
+	public boolean addResource(Drawable drawable){
+		return folderResources.add(new Img(context, drawable, context.getResources()));
 	}
 	
 	public void addResources(int[] resources){

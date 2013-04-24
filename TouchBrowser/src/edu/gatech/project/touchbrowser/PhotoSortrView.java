@@ -91,6 +91,10 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	
 	//Arindam
 	MediaPlayer mPlayer;
+	
+	//Hitesh
+	float startX;
+	float startY;
 
 	
 	// ---------------------------------------------------------------------------------------------------
@@ -133,14 +137,20 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		mLinePaintDragPointLine.setAntiAlias(true);
 		mLinePaintDragPointLine.setAlpha(100);
 		setBackgroundColor(Color.rgb(47, 47, 47));
+		
+		startX = 80;
+		startY = 80;
 
 	}
 
 	public void loadAgain(Context context, List<Img> objects) {
 		Resources res = context.getResources();
 		mImages = objects;
-		for (int i = 0; i < mImages.size(); i++)
-			mImages.get(i).load(res);
+		for (int i = 0; i < mImages.size(); i++){
+			startX = startX >= 1000 ? 0 : startX + 100;
+			startY = startY + 60;
+			mImages.get(i).load(res,startX, startY);
+		}
 		invalidate();
 	}
 
@@ -149,7 +159,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		Resources res = context.getResources();
 		int n = mImages.size();
 		for (int i = 0; i < n; i++)
-			mImages.get(i).load(res);
+			mImages.get(i).load(res,startX >= 1000 ? 0:startX+50, startY+30);
 	}
 
 	/**

@@ -43,8 +43,16 @@ class Img extends ImageView {
 		this.firstLoad = true;
 		getMetrics(res);
 		this.imgSelected = false;
+		this.drawable = res.getDrawable(resId);
 	}
 	
+	public Img(Context context, Drawable drawable, Resources res) {
+		super(context);
+		this.drawable = drawable;
+		this.firstLoad = true;
+		getMetrics(res);
+		this.imgSelected = false;
+	}
 	
 
 	private void getMetrics(Resources res) {
@@ -60,15 +68,16 @@ class Img extends ImageView {
 	}
 
 	/** Called by activity's onResume() method to load the images */
-	public void load(Resources res) {
+	public void load(Resources res, float x, float y) {
 		getMetrics(res);
-		this.drawable = res.getDrawable(resId);
 		this.width = drawable.getIntrinsicWidth();
 		this.height = drawable.getIntrinsicHeight();
 		float cx, cy, sx, sy;
 		if (firstLoad) {
-			cx = SCREEN_MARGIN + (float) (Math.random() * (displayWidth - 2 * SCREEN_MARGIN));
-			cy = SCREEN_MARGIN + (float) (Math.random() * (displayHeight - 2 * SCREEN_MARGIN));
+			/*cx = SCREEN_MARGIN + (float) (Math.random() * (displayWidth - 2 * SCREEN_MARGIN));
+			cy = SCREEN_MARGIN + (float) (Math.random() * (displayHeight - 2 * SCREEN_MARGIN));*/
+			cx = x;
+			cy = y;
 			float sc = (float) (Math.max(displayWidth, displayHeight) / (float) Math.max(width, height) * Math.random() * 0.3 + 0.2);
 			sx = sy = sc;
 			firstLoad = false;
@@ -95,7 +104,7 @@ class Img extends ImageView {
 
 	/** Called by activity's onPause() method to free memory used for loading the images */
 	public void unload() {
-		this.drawable = null;
+		//this.drawable = null;
 	}
 
 	/** Set the position and scale of an image in screen coordinates */

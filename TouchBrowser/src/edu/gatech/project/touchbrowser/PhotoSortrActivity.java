@@ -43,7 +43,13 @@ import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.GestureOverlayView.OnGesturePerformedListener;
 import android.gesture.Prediction;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.Align;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
@@ -52,7 +58,6 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnLongClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -101,11 +106,24 @@ OnGesturePerformedListener{
 	
 	// Arindam Apr 19
 	ImageView image;
-
+	
+	// Arindam Apr 23
+	RelativeLayout.LayoutParams gestureParams;
+	GestureOverlayView gestureView;
+	
+		
 	// -----------------------------------------------------------------------------------------------------------
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		
+		
+		int width = (int) ((WindowManager) getApplicationContext()
+				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
+				.getWidth();
+		int height = (int) ((WindowManager) getApplicationContext()
+				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
+				.getHeight();
 		
 		containerLayout = new RelativeLayout(getApplicationContext());
 		super.onCreate(savedInstanceState);
@@ -121,35 +139,64 @@ OnGesturePerformedListener{
 		Folder folder1 = new Folder(getApplicationContext(),R.drawable.directory, IMAGES1,folderCount++,String.valueOf(folderCount));
 		setFolderSelected(folder1);
 		folder1.setOnClickListener(folderTouchListener);
+		folder1.setOnLongClickListener(folderTouchListener);
+		
+		//text file drawable
+		Drawable file = getResources().getDrawable(R.drawable.textfile);
+		Bitmap canvasBitmap = Bitmap.createBitmap(file.getIntrinsicWidth(), file.getIntrinsicHeight(), 
+                Bitmap.Config.ARGB_8888);
+		// Create a canvas, that will draw on to canvasBitmap.
+		Canvas imageCanvas = new Canvas(canvasBitmap);
+		
+		// Set up the paint for use with our Canvas
+		Paint imagePaint = new Paint();
+		imagePaint.setTextAlign(Align.CENTER);
+		imagePaint.setTypeface(Typeface.MONOSPACE);
+		imagePaint.setTextSize(10f);
+		
+		
+		// Draw the image to our canvas
+		file.draw(imageCanvas); 
+		
+		// Draw the text on top of our image
+		imageCanvas.drawText("sample.txt", 50, 20, imagePaint);
+		imageCanvas.drawText("Size: 108 Kb", 50, 40, imagePaint);
+		imagePaint.setTextSize(8f);
+		imageCanvas.drawText("Created:", 50, 60, imagePaint);
+		imageCanvas.drawText("4/23/2013 9.20PM", 45, 70, imagePaint);
+		imageCanvas.drawText("Modified:", 50, 90, imagePaint);
+		imageCanvas.drawText("4/23/2013 12.15AM", 45, 100, imagePaint);
+		
+		// Combine background and text to a LayerDrawable
+		LayerDrawable layerDrawable = new LayerDrawable(
+		new Drawable[]{file, new BitmapDrawable(canvasBitmap)});
+		
+		folder1.addResource(layerDrawable);
 		folders.add(folder1);
 		// Arindam
 		//folder1.setBackgroundColor(Color.TRANSPARENT);
 		// ----- X -----
 		Folder folder2 = new Folder(getApplicationContext(), R.drawable.directory, IMAGES2,folderCount++,String.valueOf(folderCount));
 		folder2.setOnClickListener(folderTouchListener);
+		folder2.setOnLongClickListener(folderTouchListener);
 		folders.add(folder2);
 		
 		Button b = new Button(getApplicationContext());
 		b.setBackgroundDrawable(getResources().getDrawable(R.drawable.directory));
 		b.setText("hello");
-		flayout.addView(b, fParams);
-		
+		// flayout.addView(b, fParams);
+
 		flayout.addView(folder1, fParams);
 		flayout.addView(folder2, fParams);
 		//flayout.addView(folder3, fParams);
 		for(int i =0; i < 20; i++){
 			Folder folder = new Folder(this,R.drawable.directory, folderCount++,String.valueOf(folderCount));
 			folder.setOnClickListener(folderTouchListener);
+			folder.setOnLongClickListener(folderTouchListener);
 			folders.add(folder);
 			flayout.addView(folder, fParams);
 		}
-		int width = (int) ((WindowManager) getApplicationContext()
-				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
-				.getWidth();
-		int height = (int) ((WindowManager) getApplicationContext()
-				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
-				.getHeight();
-
+		
 		// Arindam Apr 12
 		LayoutInflater inflater = getLayoutInflater();
 		View layout = inflater.inflate(R.layout.toast_layout,
@@ -160,10 +207,10 @@ OnGesturePerformedListener{
 		image = (ImageView) layout.findViewById(R.id.hand);
 		image.setImageResource(R.drawable.hand);
 		TextView text = (TextView) layout.findViewById(R.id.text);
-		text.setText("Use the gesture pad to undo this move!");
+		text.setText("Use gesture to undo this move!");
 
 		customToast = new Toast(getApplicationContext());
-		customToast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+		customToast.setGravity(Gravity.BOTTOM, 380,80);
 		customToast.setDuration(Toast.LENGTH_SHORT);
 		customToast.setView(layout);
 		
@@ -186,8 +233,10 @@ OnGesturePerformedListener{
 		
 		//new folder button
 		ImageButton newFolder = new ImageButton(this);
-		newFolder.setImageDrawable(getResources().getDrawable(R.drawable.gallery));
-		RelativeLayout.LayoutParams newFolderParams = new RelativeLayout.LayoutParams(width * 1/9,60);
+		newFolder.setImageDrawable(getResources().getDrawable(
+				R.drawable.new_folder));
+		RelativeLayout.LayoutParams newFolderParams = new RelativeLayout.LayoutParams(
+				width * 1 / 9, 60);
 		newFolderParams.setMargins(0, 10, 25, 10);
 		newFolderParams.addRule(RelativeLayout.LEFT_OF, folderView.getId());
 		newFolder.setId(1);
@@ -208,6 +257,7 @@ OnGesturePerformedListener{
                                 Toast.LENGTH_SHORT).show();
                         Folder newFolder = new Folder(getApplicationContext(),R.drawable.directory, folderCount++,folderName.getText().toString());
                         newFolder.setOnClickListener(folderTouchListener);
+                        newFolder.setOnLongClickListener(folderTouchListener);
             			folders.add(newFolder);
             			flayout.addView(newFolder,0, fParams);
                   } });
@@ -238,14 +288,16 @@ OnGesturePerformedListener{
 			@Override
 			public void onClick(View v) {
 				
-				// Arindam
-				customToast.show();
-				setAnimation(image);
-				// ----- X -----
 
 				List<Img> selectedResources = photoSorter
 						.getSelectedresources();
 				if (selectedResources != null) {
+					
+					// Arindam
+					customToast.show();
+					setAnimation(image);
+					// ----- X -----
+					
 					currentFolder.setFolderResources(photoSorter
 							.getAllResources());
 					currentFolder.removeResources(selectedResources);
@@ -258,7 +310,7 @@ OnGesturePerformedListener{
 		});
 
 		// gesture view
-		final RelativeLayout.LayoutParams gestureParams = new RelativeLayout.LayoutParams(
+		gestureParams = new RelativeLayout.LayoutParams(
 				width * 1 / 4, 200);
 		gestureParams.leftMargin = width * 3 / 4;
 		gestureParams.topMargin = 475;
@@ -267,7 +319,7 @@ OnGesturePerformedListener{
 		// gestureParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT,
 		// photoSorter.getId());
 
-		final GestureOverlayView gestureView = new GestureOverlayView(this);
+		gestureView = new GestureOverlayView(this);
 		gestureView.setId(5);
 		gestureView.addOnGesturePerformedListener(this);
 		
@@ -287,7 +339,7 @@ OnGesturePerformedListener{
 
 		final TextView swipeView = new TextView(this);
 		// swipeView.setBackgroundColor(Color.BLUE);
-		swipeView.setId(5);
+		swipeView.setId(4);
 
 		swipeView.setOnTouchListener(new SwipeGesture() {
 			public void onSwipeTop() {
@@ -351,18 +403,30 @@ OnGesturePerformedListener{
 		translate = new TranslateAnimation(0, 900, 0, 0);
 		translate.setDuration(6000);
 		image.setAnimation(translate);
+		
+		if(containerLayout.findViewById(5) == null){
+			System.out.println("Adding the view");
+			containerLayout.addView(gestureView, 5, gestureParams);
+		}
+		
+		image.postDelayed(new Runnable() {
+			public void run() {
+				containerLayout.removeView(gestureView);
+			}
+		}, 2500);
+		
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		photoSorter.loadImages(this);
+		photoSorter.loadAgain(this,currentFolder.getFolderResources());
 	}
 	
 	@Override
 	protected void onPause() {
 		super.onPause();
-		photoSorter.unloadImages();
+		//photoSorter.unloadImages();
 	}
 	
 	@Override
@@ -483,9 +547,47 @@ OnGesturePerformedListener{
 					
 		}
 	}
-	
-	class FolderTouch implements View.OnClickListener{
+
+	class FolderTouch implements View.OnClickListener, View.OnLongClickListener {
 		
+		@Override
+		public boolean onLongClick(View v) {
+
+			final Folder clickedFolder = (Folder) v;
+
+			Toast.makeText(PhotoSortrActivity.this, "Long click",
+					Toast.LENGTH_SHORT).show();
+
+			final AlertDialog alertDialog = new AlertDialog.Builder(
+					PhotoSortrActivity.this).create();
+			alertDialog.setTitle("Rename folder");
+			final EditText renameFolder = new EditText(PhotoSortrActivity.this);
+			alertDialog.setView(renameFolder);
+
+			alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Submit",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							Toast.makeText(
+									PhotoSortrActivity.this,
+									"Folder name changed to"
+											+ renameFolder.getText(),
+									Toast.LENGTH_SHORT).show();
+							clickedFolder.setName(renameFolder.getText() + "");
+							clickedFolder.setText(renameFolder.getText() + "");
+						}
+					});
+
+			alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
+					new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int id) {
+							alertDialog.dismiss();
+						}
+					});
+
+			alertDialog.show();
+			return true;
+		}
+
 		@Override
 		public void onClick(View v) {
 			Folder clickedFolder = (Folder)v;
