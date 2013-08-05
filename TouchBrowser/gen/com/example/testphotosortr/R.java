@@ -19,18 +19,29 @@ public final class R {
         public static final int campus6=0x7f020005;
         public static final int campus7=0x7f020006;
         public static final int campus8=0x7f020007;
-        public static final int directory=0x7f020008;
-        public static final int ic_action_search=0x7f020009;
-        public static final int ic_launcher=0x7f02000a;
-        public static final int pin=0x7f02000b;
-        public static final int recycle_bin=0x7f02000c;
+        public static final int custom_background=0x7f020008;
+        public static final int directory=0x7f020009;
+        public static final int hand=0x7f02000a;
+        public static final int ic_action_search=0x7f02000b;
+        public static final int ic_launcher=0x7f02000c;
+        public static final int lake=0x7f02000d;
+        public static final int new_folder=0x7f02000e;
+        public static final int pin=0x7f02000f;
+        public static final int recycle_bin=0x7f020010;
+        public static final int sunset=0x7f020011;
+        public static final int tahiti=0x7f020012;
+        public static final int textfile=0x7f020013;
     }
     public static final class id {
         public static final int ButtonTest=0x7f070000;
+        public static final int hand=0x7f070002;
+        public static final int text=0x7f070003;
+        public static final int toast_layout_root=0x7f070001;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int activity_photo_sortr=0x7f030001;
+        public static final int toast_layout=0x7f030002;
     }
     public static final class raw {
         public static final int gestures=0x7f040000;
