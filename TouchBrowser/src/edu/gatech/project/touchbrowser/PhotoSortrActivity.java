@@ -111,6 +111,10 @@ OnGesturePerformedListener{
 	RelativeLayout.LayoutParams gestureParams;
 	GestureOverlayView gestureView;
 	
+	// Arindam Aug 27
+	View verticalRule;
+	RelativeLayout.LayoutParams verticalRuleParams;
+	
 		
 	// -----------------------------------------------------------------------------------------------------------
 
@@ -142,36 +146,10 @@ OnGesturePerformedListener{
 		folder1.setOnLongClickListener(folderTouchListener);
 		
 		//text file drawable
-		Drawable file = getResources().getDrawable(R.drawable.textfile);
-		Bitmap canvasBitmap = Bitmap.createBitmap(file.getIntrinsicWidth(), file.getIntrinsicHeight(), 
-                Bitmap.Config.ARGB_8888);
-		// Create a canvas, that will draw on to canvasBitmap.
-		Canvas imageCanvas = new Canvas(canvasBitmap);
+		LayerDrawable layerDrawable = addTextResource();
+		String content = "Hi, this is the first text file. I want to see how it looks in the application.";
 		
-		// Set up the paint for use with our Canvas
-		Paint imagePaint = new Paint();
-		imagePaint.setTextAlign(Align.CENTER);
-		imagePaint.setTypeface(Typeface.MONOSPACE);
-		imagePaint.setTextSize(10f);
-		
-		
-		// Draw the image to our canvas
-		file.draw(imageCanvas); 
-		
-		// Draw the text on top of our image
-		imageCanvas.drawText("sample.txt", 50, 20, imagePaint);
-		imageCanvas.drawText("Size: 108 Kb", 50, 40, imagePaint);
-		imagePaint.setTextSize(8f);
-		imageCanvas.drawText("Created:", 50, 60, imagePaint);
-		imageCanvas.drawText("4/23/2013 9.20PM", 45, 70, imagePaint);
-		imageCanvas.drawText("Modified:", 50, 90, imagePaint);
-		imageCanvas.drawText("4/23/2013 12.15AM", 45, 100, imagePaint);
-		
-		// Combine background and text to a LayerDrawable
-		LayerDrawable layerDrawable = new LayerDrawable(
-		new Drawable[]{file, new BitmapDrawable(canvasBitmap)});
-		
-		folder1.addResource(layerDrawable);
+		folder1.addTextResource(layerDrawable,content);
 		folders.add(folder1);
 		// Arindam
 		//folder1.setBackgroundColor(Color.TRANSPARENT);
@@ -179,6 +157,7 @@ OnGesturePerformedListener{
 		Folder folder2 = new Folder(getApplicationContext(), R.drawable.directory, IMAGES2,folderCount++,String.valueOf(folderCount));
 		folder2.setOnClickListener(folderTouchListener);
 		folder2.setOnLongClickListener(folderTouchListener);
+		folder2.addTextResource(layerDrawable,content);
 		folders.add(folder2);
 		
 		Button b = new Button(getApplicationContext());
@@ -384,6 +363,14 @@ OnGesturePerformedListener{
 			finish();
 		}
 		
+		// Arindam Aug 27
+		verticalRule = new View(this);
+				
+		verticalRuleParams = new RelativeLayout.LayoutParams(3,LayoutParams.FILL_PARENT);
+		verticalRuleParams.leftMargin = width * 60 / 100;
+		verticalRuleParams.topMargin = 80;
+		verticalRule.setBackgroundColor(Color.rgb(47, 47, 47));
+	    containerLayout.addView(verticalRule, 0, verticalRuleParams);
 		
 		containerLayout.addView(newFolder, 0,newFolderParams);
 		containerLayout.addView(folderView, 1, folderParams);
@@ -395,6 +382,38 @@ OnGesturePerformedListener{
 		// containerLayout.addView(gestureView,4,gestureParams);
 
 		setContentView(containerLayout);
+	}
+
+	private LayerDrawable addTextResource() {
+		Drawable file = getResources().getDrawable(R.drawable.textfile);
+		Bitmap canvasBitmap = Bitmap.createBitmap(file.getIntrinsicWidth(), file.getIntrinsicHeight(), 
+                Bitmap.Config.ARGB_8888);
+		// Create a canvas, that will draw on to canvasBitmap.
+		Canvas imageCanvas = new Canvas(canvasBitmap);
+		
+		// Set up the paint for use with our Canvas
+		Paint imagePaint = new Paint();
+		imagePaint.setTextAlign(Align.CENTER);
+		imagePaint.setTypeface(Typeface.MONOSPACE);
+		imagePaint.setTextSize(10f);
+		
+		
+		// Draw the image to our canvas
+		file.draw(imageCanvas); 
+		
+		// Draw the text on top of our image
+		imageCanvas.drawText("sample.txt", 50, 20, imagePaint);
+		imageCanvas.drawText("Size: 108 Kb", 50, 40, imagePaint);
+		imagePaint.setTextSize(8f);
+		imageCanvas.drawText("Created:", 50, 60, imagePaint);
+		imageCanvas.drawText("4/23/2013 9.20PM", 45, 70, imagePaint);
+		imageCanvas.drawText("Modified:", 50, 90, imagePaint);
+		imageCanvas.drawText("4/23/2013 12.15AM", 45, 100, imagePaint);
+		
+		// Combine background and text to a LayerDrawable
+		LayerDrawable layerDrawable = new LayerDrawable(
+		new Drawable[]{file, new BitmapDrawable(canvasBitmap)});
+		return layerDrawable;
 	}
 
 	// Arindam Apr 19

@@ -12,13 +12,13 @@ import android.util.DisplayMetrics;
 import android.widget.ImageView;
 import edu.gatech.project.touchbrowser.MultiTouchController.PositionAndScale;
 
-class Img extends ImageView {
+class Img extends ImageView implements Cloneable{
 	
 	private static final int UI_MODE_ROTATE = 1, UI_MODE_ANISOTROPIC_SCALE = 2;
 
 	private int mUIMode = UI_MODE_ROTATE;
 	
-	private int resId;
+	int resId;
 
 	private Drawable drawable;
 	
@@ -119,7 +119,7 @@ class Img extends ImageView {
 	}
 
 	/** Set the position and scale of an image in screen coordinates */
-	private boolean setPos(float centerX, float centerY, float scaleX, float scaleY, float angle) {
+	boolean setPos(float centerX, float centerY, float scaleX, float scaleY, float angle) {
 		float ws = (width / 2) * scaleX, hs = (height / 2) * scaleY;
 		float newMinX = centerX - ws, newMinY = centerY - hs, newMaxX = centerX + ws, newMaxY = centerY + hs;
 		if (centerX > displayWidth || centerX < 0 || centerY > 650
@@ -285,6 +285,32 @@ class Img extends ImageView {
 	 */
 	public void setImgSelected(boolean imgSelected) {
 		this.imgSelected = imgSelected;
+	}
+	
+	public Object clone(){
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public void setCenterX(float centerX) {
+		this.centerX = centerX;
+	}
+
+	public void setCenterY(float centerY) {
+		this.centerY = centerY;
+	}
+
+	public void setImgScaleX(float scaleX) {
+		this.scaleX = scaleX;
+	}
+
+	public void setImgScaleY(float scaleY) {
+		this.scaleY = scaleY;
 	}
 
 	

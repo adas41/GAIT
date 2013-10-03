@@ -91,6 +91,11 @@ public class Folder extends Button {
 		}
 		return result;
 	}
+	
+	//hitesh - textresources
+	public boolean addTextResource(Drawable drawable, String text){
+		return folderResources.add(new TextImg(context, drawable, context.getResources(),text));
+	}
 
 	/**
 	 * @param folderResources the folderResources to set

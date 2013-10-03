@@ -35,6 +35,7 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -44,7 +45,11 @@ import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import edu.gatech.project.touchbrowser.MultiTouchController.MultiTouchObjectCanvas;
 import edu.gatech.project.touchbrowser.MultiTouchController.PointInfo;
 import edu.gatech.project.touchbrowser.MultiTouchController.PositionAndScale;
@@ -95,6 +100,10 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	//Hitesh
 	float startX;
 	float startY;
+	
+	// Arindam
+	int screenWidth = 0;
+	int screenHeight = 0;
 
 	
 	// ---------------------------------------------------------------------------------------------------
@@ -122,7 +131,13 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		 * resources.size(); i++) mImages.add(new Img(context, resources.get(i),
 		 * res));
 		 */
-
+		screenWidth = (int) ((WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
+				.getWidth();
+		screenHeight = (int) ((WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
+				.getHeight();
+		
 		mLinePaintTouchPointCircle.setColor(Color.WHITE);
 		mLinePaintTouchPointCircle.setStrokeWidth(5);
 		mLinePaintTouchPointCircle.setStyle(Style.FILL);
@@ -424,6 +439,89 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		isScaled = true;
 		invalidate();
 		
+	}
+	
+	// Arindam Aug 27
+		public void checkDragPosition(Img img, double posX, double posY){
+			/*if(posX > screenWidth){
+				//
+			}*/
+		}
+		
+		public void openObjInDetailedView(final Img img){
+			
+			System.out.println("Double tap");
+			
+			mImages.remove(img);
+			loadAgain(context, mImages);
+			
+			final ImageView animatedImg = new ImageView(context);
+					
+			final PhotoSortrActivity psa = ((PhotoSortrActivity)context);
+			
+			animatedImg.setImageDrawable(img.getDrawable());
+			
+			TranslateAnimation translate;
+			translate = new TranslateAnimation(Animation.ABSOLUTE, img.getCenterX(), Animation.ABSOLUTE, 700, Animation.ABSOLUTE, img.getCenterY(), Animation.ABSOLUTE, 200);
+			translate.setDuration(700);
+			animatedImg.setAnimation(translate);
+			
+			psa.containerLayout.addView(animatedImg, 6);
+					
+			//animatedImg.startAnimation(translate);
+			
+			animatedImg.postDelayed(new Runnable() {
+				public void run() {
+					psa.containerLayout.removeView(animatedImg);
+					DrawCanvasCircle pcc = new DrawCanvasCircle (context);
+				    Bitmap result = Bitmap.createBitmap(25, 25, Bitmap.Config.ARGB_8888);
+				    Canvas canvas = new Canvas(result);
+				    pcc.draw(canvas);
+				    
+				    RelativeLayout.LayoutParams detailedViewParams = new RelativeLayout.LayoutParams(screenWidth * 3/4 ,screenHeight - 100);
+				    detailedViewParams.leftMargin = 760;
+				    detailedViewParams.topMargin = 80;
+				    
+				    pcc.setLayoutParams(detailedViewParams);
+				    psa.containerLayout.addView(pcc);
+				    
+
+				    
+				}
+			}, 100);
+		}
+	
+	//Hitesh sept 20
+	public void copyObject(Img img, PointInfo point){
+		Img newImg = (Img) img.clone();
+		//Img newImg = new Img(context, img.getDrawable(), context.getResources());
+		newImg.setCenterX(point.getXs()[1]);
+		newImg.setCenterY(point.getYs()[1]);
+		newImg.load(context.getResources(), point.getXs()[1], point.getYs()[1]);
+		newImg.setSelected(false);
+		mImages.add(newImg);
+		invalidate();
+		
+	}
+	
+	@SuppressLint("NewApi")
+	public void copyObjectProperties(Img fromImg, Img toImg){
+		toImg.setPos(toImg.getCenterX(), toImg.getCenterY(), fromImg.getScaleX(), fromImg.getScaleY(), fromImg.getAngle());
+		invalidate();
+		
+	}
+	
+	public Img getObjectAtTouchPoint(PointInfo pt, int touchIndex){
+		if(touchIndex == 1 && pt.getXs().length < 2)
+			return null;
+		float x = pt.getXs()[touchIndex], y = pt.getYs()[touchIndex];
+		int n = mImages.size();
+		for (int i = n - 1; i >= 0; i--) {
+			Img im = mImages.get(i);
+			if (im.containsPoint(x, y))
+				return im;
+		}
+		return null;
 	}
 
 }

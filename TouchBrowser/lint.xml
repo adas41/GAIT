@@ -1,3 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lint>
+    <issue id="Override">
+        <ignore path="src/edu/gatech/project/touchbrowser/TextImg.java" />
+    </issue>
+    <issue id="ViewConstructor">
+        <ignore path="src/edu/gatech/project/touchbrowser/TextImg.java" />
+    </issue>
 </lint>

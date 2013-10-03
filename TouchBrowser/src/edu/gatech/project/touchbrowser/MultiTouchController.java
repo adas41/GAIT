@@ -173,6 +173,17 @@ public class MultiTouchController<T> {
 	DragPoint dragPoint;
 	
 	public ArrayList<DragPoint> listOfDragPoints;
+	
+	// Arindam Sep 4
+	private long inLongTouchStartTime = 0;
+	private boolean inLongTouchRecorded = false;
+		
+	private int lastTappedImgId;
+	private long lastTapTime = 0;
+
+	private float curPosX;
+
+	private float curPosY;
 
 	// ----------------------------------------------------------------------------------------------------------------------
 
@@ -420,16 +431,38 @@ public class MultiTouchController<T> {
 					if(listOfDragPoints == null)
 						listOfDragPoints = new ArrayList<DragPoint>();
 					listOfDragPoints.add(dragPoint);
+					
+					// Arindam September 4
+					// Long tap 
+					inLongTouchStartTime = mCurrPt.getEventTime();
+					curPosX = mCurrPt.getX();
+					curPosY = mCurrPt.getY();
+					
+					// Arindam September 4
+					// Double tap 
+					
+					if(mCurrPt.getEventTime() - lastTapTime <= 500){
+						if(selectedObject instanceof Img){
+							if(lastTappedImgId == ((Img)(selectedObject)).resId){
+								objectCanvas.openObjInDetailedView(selectedObject);
+							}
+						}
+					}
+					
+					lastTapTime = mCurrPt.getEventTime();
+					if(selectedObject instanceof Img){
+						lastTappedImgId = ((Img)(selectedObject)).resId;
+					}
 				}
 				//hitesh code
-				else{
+				else if(!mCurrPt.isMultiTouch){
 					//System.out.println("+++++++++++++++++tapped outside");
 					if(outTouchStartTime == -1 && !longTouchRecorded){
 						
 						outTouchStartTime = mCurrPt.getEventTime();
 						//System.out.println("+++++++++++++value changed for outtouchstarttime to:"+outTouchStartTime);
 						
-					}else if(mCurrPt.getEventTime() - outTouchStartTime > 500 && !longTouchRecorded){
+					}else if(mCurrPt.getEventTime() - outTouchStartTime > 1000 && !longTouchRecorded){
 							System.out.println("++++++++++long touch recorded");
 							outTouchStartTime = -1;
 							longTouchRecorded = true;
@@ -465,6 +498,7 @@ public class MultiTouchController<T> {
 				// Need to let events settle before moving things, to help with event noise on touchdown
 				mSettleStartTime = mCurrPt.getEventTime();
 				mSettleEndTime = mSettleStartTime + EVENT_SETTLE_TIME_INTERVAL;
+				System.out.println("++++++ second obj selected:"+objectCanvas.getDraggableObjectAtPoint(mCurrPt));
 
 			} else {
 				// Point 1 is still down and point 2 did not change state, just do single-point drag to new location
@@ -519,6 +553,19 @@ public class MultiTouchController<T> {
 				} else if (mCurrPt.eventTime < mSettleEndTime) {
 					// Events have not yet settled, reset
 					anchorAtThisPositionAndScale();
+					T firstTouchObj = objectCanvas.getObjectAtTouchPoint(mCurrPt, 0);
+					if(firstTouchObj != null){
+						T secondTouchObj = objectCanvas.getObjectAtTouchPoint(mCurrPt, 1);
+						if(secondTouchObj == null){
+							System.out.println("+++++++x: "+mCurrPt.xs[0]+", "+ mCurrPt.xs[1]);
+							System.out.println("++++++y: "+mCurrPt.ys[0] +", "+mCurrPt.ys[1]);
+							objectCanvas.copyObject(selectedObject, mCurrPt);
+							System.out.println("+++ still at second point outside");
+						}else{
+							objectCanvas.copyObjectProperties(selectedObject, secondTouchObj);
+							System.out.println("+++ still at second point inside:"+objectCanvas.getDraggableObjectAtPoint(mCurrPt));
+						}
+					}
 				} else {
 					// Stretch to new position and size
 					performDragOrPinch();
@@ -897,5 +944,18 @@ public class MultiTouchController<T> {
 		
 		// Arindam Apr 19
 		public void drawScaleArcCaller(double percentOfScale);
+		
+		// Arindam Aug 27
+		public void checkDragPosition(T obj, double posX, double posY);
+				
+		// Arindam Sep 7
+		public void openObjInDetailedView(T obj);
+		
+		//hitesh Sept 20 - copy obj on long hold
+		public void copyObject(T obj, PointInfo point);
+		
+		public void copyObjectProperties(T fromObj, T toObjS);
+		
+		public T getObjectAtTouchPoint(PointInfo touchPoint, int touchIndex);
 	}
 }
