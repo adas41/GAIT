@@ -37,6 +37,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
@@ -146,7 +147,7 @@ OnGesturePerformedListener{
 		folder1.setOnLongClickListener(folderTouchListener);
 		
 		//text file drawable
-		LayerDrawable layerDrawable = addTextResource();
+		LayerDrawable layerDrawable = addTextResource(getResources());
 		String content = "Hi, this is the first text file. I want to see how it looks in the application.";
 		
 		folder1.addTextResource(layerDrawable,content);
@@ -384,8 +385,8 @@ OnGesturePerformedListener{
 		setContentView(containerLayout);
 	}
 
-	private LayerDrawable addTextResource() {
-		Drawable file = getResources().getDrawable(R.drawable.textfile);
+	public static LayerDrawable addTextResource(Resources resources) {
+		Drawable file = resources.getDrawable(R.drawable.textfile);
 		Bitmap canvasBitmap = Bitmap.createBitmap(file.getIntrinsicWidth(), file.getIntrinsicHeight(), 
                 Bitmap.Config.ARGB_8888);
 		// Create a canvas, that will draw on to canvasBitmap.

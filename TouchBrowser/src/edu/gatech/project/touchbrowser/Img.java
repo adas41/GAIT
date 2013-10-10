@@ -184,6 +184,10 @@ class Img extends ImageView implements Cloneable{
 	public Drawable getDrawable() {
 		return drawable;
 	}
+	
+	public void setDrawable(Drawable drawable){
+		this.drawable = drawable;
+	}
 
 	public int getXWidth() {
 		return width;

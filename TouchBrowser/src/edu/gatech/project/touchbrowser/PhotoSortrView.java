@@ -41,6 +41,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -100,6 +102,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	//Hitesh
 	float startX;
 	float startY;
+	Img currentObjInEditor = null;
 	
 	// Arindam
 	int screenWidth = 0;
@@ -453,6 +456,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			System.out.println("Double tap");
 			
 			mImages.remove(img);
+			currentObjInEditor = img;
 			loadAgain(context, mImages);
 			
 			final ImageView animatedImg = new ImageView(context);
@@ -473,22 +477,35 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			animatedImg.postDelayed(new Runnable() {
 				public void run() {
 					psa.containerLayout.removeView(animatedImg);
-					DrawCanvasCircle pcc = new DrawCanvasCircle (context);
-				    Bitmap result = Bitmap.createBitmap(25, 25, Bitmap.Config.ARGB_8888);
-				    Canvas canvas = new Canvas(result);
-				    pcc.draw(canvas);
-				    
+					
+				    View pcc = addEditorView(img);
 				    RelativeLayout.LayoutParams detailedViewParams = new RelativeLayout.LayoutParams(screenWidth * 3/4 ,screenHeight - 100);
 				    detailedViewParams.leftMargin = 760;
 				    detailedViewParams.topMargin = 80;
 				    
 				    pcc.setLayoutParams(detailedViewParams);
-				    psa.containerLayout.addView(pcc);
+				    psa.containerLayout.addView(pcc,6);
 				    
 
 				    
 				}
 			}, 100);
+		}
+		
+		public View addEditorView(Img img){
+			
+			View pcc = null;
+			if(img instanceof TextImg){
+				pcc = new TextEditor(context, this, (TextImg)img);
+			}
+			else if(img instanceof Img){
+				pcc = new ImageEditor (context,this,img);
+			    Bitmap result = Bitmap.createBitmap(25, 25, Bitmap.Config.ARGB_8888);
+			    Canvas canvas = new Canvas(result);
+			    //pcc.draw(canvas);
+			} 
+			
+			return pcc;
 		}
 	
 	//Hitesh sept 20
@@ -509,6 +526,26 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		toImg.setPos(toImg.getCenterX(), toImg.getCenterY(), fromImg.getScaleX(), fromImg.getScaleY(), fromImg.getAngle());
 		invalidate();
 		
+	}
+	
+	//Hitesh Oct 6
+	public void addImgFromEditor(Drawable drawable){
+		((PhotoSortrActivity)context).containerLayout.removeViewAt(6);
+		Img img = currentObjInEditor;
+		img.setDrawable(drawable);
+		mImages.add(img);
+		//currentObjInEditor = null;
+		invalidate();
+		
+	}
+	
+	public void addTextImgFromEditor(String text){
+		TextImg img = (TextImg)currentObjInEditor;
+		img.setText(text);
+		mImages.add(img);
+		//currentObjInEditor = null;
+		invalidate();
+		((PhotoSortrActivity)context).containerLayout.removeViewAt(6);
 	}
 	
 	public Img getObjectAtTouchPoint(PointInfo pt, int touchIndex){
