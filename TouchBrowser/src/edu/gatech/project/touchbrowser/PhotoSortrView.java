@@ -30,6 +30,7 @@
 package edu.gatech.project.touchbrowser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.annotation.SuppressLint;
@@ -38,11 +39,14 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -489,7 +493,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 
 				    
 				}
-			}, 100);
+			}, 700);
 		}
 		
 		public View addEditorView(Img img){
@@ -523,16 +527,35 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	
 	@SuppressLint("NewApi")
 	public void copyObjectProperties(Img fromImg, Img toImg){
+		mImages.remove(toImg);
 		toImg.setPos(toImg.getCenterX(), toImg.getCenterY(), fromImg.getScaleX(), fromImg.getScaleY(), fromImg.getAngle());
+		/*if(fromImg.getPaint() != null){
+			Bitmap bitmap = ((BitmapDrawable) toImg.getDrawable()).getBitmap();
+			Bitmap alteredBitmap = Bitmap.createBitmap(
+					bitmap.getWidth(), bitmap.getHeight(),
+					bitmap.getConfig());
+			Canvas canvas = new Canvas(alteredBitmap);
+			Paint paint = new Paint();
+			ColorMatrix cm = new ColorMatrix();
+			
+			cm.set(new float[] { 8, 0, 0, 0, 8, 0,
+					1, 0, 0, 8, 0, 0, 1, 0,
+					8, 0, 0, 0, 1, 0 });
+
+			paint.setColorFilter(new ColorMatrixColorFilter(cm));
+			Matrix matrix = new Matrix();
+			canvas.drawBitmap(bitmap, matrix, paint);
+			toImg.setDrawable(new BitmapDrawable(bitmap));
+			mImages.add(toImg);
+		}*/
+		mImages.add(toImg);
 		invalidate();
 		
 	}
 	
 	//Hitesh Oct 6
-	public void addImgFromEditor(Drawable drawable){
+	public void addImgFromEditor(Img img){
 		((PhotoSortrActivity)context).containerLayout.removeViewAt(6);
-		Img img = currentObjInEditor;
-		img.setDrawable(drawable);
 		mImages.add(img);
 		//currentObjInEditor = null;
 		invalidate();
@@ -542,6 +565,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	public void addTextImgFromEditor(String text){
 		TextImg img = (TextImg)currentObjInEditor;
 		img.setText(text);
+		img.setDrawable(PhotoSortrActivity.addTextResource(getResources(), new Date(),text.getBytes().length));
 		mImages.add(img);
 		//currentObjInEditor = null;
 		invalidate();

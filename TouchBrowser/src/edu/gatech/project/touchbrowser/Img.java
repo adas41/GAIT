@@ -36,6 +36,7 @@ class Img extends ImageView implements Cloneable{
 	
 	private DragPoint start;
 	private DragPoint end;
+	Paint paint;
 
 	public Img(Context context, int resId, Resources res) {
 		super(context);
@@ -44,6 +45,7 @@ class Img extends ImageView implements Cloneable{
 		getMetrics(res);
 		this.imgSelected = false;
 		this.drawable = res.getDrawable(resId);
+		this.paint = null;
 	}
 	
 	public Img(Context context, Drawable drawable, Resources res) {
@@ -52,6 +54,7 @@ class Img extends ImageView implements Cloneable{
 		this.firstLoad = true;
 		getMetrics(res);
 		this.imgSelected = false;
+		this.paint = null;
 	}
 	
 
@@ -315,6 +318,14 @@ class Img extends ImageView implements Cloneable{
 
 	public void setImgScaleY(float scaleY) {
 		this.scaleY = scaleY;
+	}
+
+	public Paint getPaint() {
+		return paint;
+	}
+
+	public void setPaint(Paint paint) {
+		this.paint = paint;
 	}
 
 	

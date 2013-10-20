@@ -1,7 +1,11 @@
 package edu.gatech.project.touchbrowser;
 
+import android.content.Context;
+import android.text.InputType;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 public final class GestureListener extends SimpleOnGestureListener {
 
@@ -31,9 +35,9 @@ public final class GestureListener extends SimpleOnGestureListener {
             if (Math.abs(diffX) > Math.abs(diffY)) {
                 if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffX > 0) {
-                        onSwipeRight();
+                        gestureHandler.swipeRight();
                     } else {
-                        onSwipeLeft();
+                        gestureHandler.swipeLeft();
                     }
                 }
             } else {
@@ -57,6 +61,19 @@ public final class GestureListener extends SimpleOnGestureListener {
 		return true;
     	
     }
+    
+    /*public boolean onSingleTapUp(MotionEvent event){
+    	
+    	if(gestureHandler instanceof TextEditor){
+	    	TextEditor editText = (TextEditor)gestureHandler;
+	    	editText.setInputType(InputType.TYPE_CLASS_TEXT);
+	        editText.requestFocus();
+	        InputMethodManager mgr = (InputMethodManager) editText.context.getSystemService(Context.INPUT_METHOD_SERVICE);
+	        mgr.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
+    	}
+    	
+    	return true;
+    }*/
 
 
 	public void onSwipeRight() {
@@ -76,5 +93,9 @@ public final class GestureListener extends SimpleOnGestureListener {
 interface EditorGestureHandler{
 	 
 	 public void doubleTap();
+	 
+	 public void swipeRight();
+	 
+	 public void swipeLeft();
 	 
  }

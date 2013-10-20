@@ -553,6 +553,7 @@ public class MultiTouchController<T> {
 				} else if (mCurrPt.eventTime < mSettleEndTime) {
 					// Events have not yet settled, reset
 					anchorAtThisPositionAndScale();
+					
 					T firstTouchObj = objectCanvas.getObjectAtTouchPoint(mCurrPt, 0);
 					if(firstTouchObj != null){
 						T secondTouchObj = objectCanvas.getObjectAtTouchPoint(mCurrPt, 1);
@@ -561,11 +562,12 @@ public class MultiTouchController<T> {
 							System.out.println("++++++y: "+mCurrPt.ys[0] +", "+mCurrPt.ys[1]);
 							objectCanvas.copyObject(selectedObject, mCurrPt);
 							System.out.println("+++ still at second point outside");
-						}else{
+						}else if(!secondTouchObj.equals(selectedObject)){
 							objectCanvas.copyObjectProperties(selectedObject, secondTouchObj);
-							System.out.println("+++ still at second point inside:"+objectCanvas.getDraggableObjectAtPoint(mCurrPt));
+							//System.out.println("+++ still at second point inside:"+objectCanvas.getDraggableObjectAtPoint(mCurrPt));
 						}
 					}
+				
 				} else {
 					// Stretch to new position and size
 					performDragOrPinch();

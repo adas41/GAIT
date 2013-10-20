@@ -29,8 +29,10 @@
 
 package edu.gatech.project.touchbrowser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -147,8 +149,10 @@ OnGesturePerformedListener{
 		folder1.setOnLongClickListener(folderTouchListener);
 		
 		//text file drawable
-		LayerDrawable layerDrawable = addTextResource(getResources());
-		String content = "Hi, this is the first text file. I want to see how it looks in the application.";
+		String content = "Hi, this is the first text file. I want to see how it looks in the application. We are trying to provide the features to be able to edit both text and image file through same contextual gestures. Swiping right increases the text size and vice versa on the other side";
+		LayerDrawable layerDrawable = addTextResource(getResources(),new Date(), content.getBytes().length);
+		
+		
 		
 		folder1.addTextResource(layerDrawable,content);
 		folders.add(folder1);
@@ -385,7 +389,7 @@ OnGesturePerformedListener{
 		setContentView(containerLayout);
 	}
 
-	public static LayerDrawable addTextResource(Resources resources) {
+	public static LayerDrawable addTextResource(Resources resources, Date lastModified, int length) {
 		Drawable file = resources.getDrawable(R.drawable.textfile);
 		Bitmap canvasBitmap = Bitmap.createBitmap(file.getIntrinsicWidth(), file.getIntrinsicHeight(), 
                 Bitmap.Config.ARGB_8888);
@@ -398,18 +402,19 @@ OnGesturePerformedListener{
 		imagePaint.setTypeface(Typeface.MONOSPACE);
 		imagePaint.setTextSize(10f);
 		
-		
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	    
 		// Draw the image to our canvas
 		file.draw(imageCanvas); 
 		
 		// Draw the text on top of our image
 		imageCanvas.drawText("sample.txt", 50, 20, imagePaint);
-		imageCanvas.drawText("Size: 108 Kb", 50, 40, imagePaint);
+		imageCanvas.drawText("Size:"+length+" B", 45, 40, imagePaint);
 		imagePaint.setTextSize(8f);
 		imageCanvas.drawText("Created:", 50, 60, imagePaint);
-		imageCanvas.drawText("4/23/2013 9.20PM", 45, 70, imagePaint);
+		imageCanvas.drawText("4/23/2013 19:30", 45, 70, imagePaint);
 		imageCanvas.drawText("Modified:", 50, 90, imagePaint);
-		imageCanvas.drawText("4/23/2013 12.15AM", 45, 100, imagePaint);
+		imageCanvas.drawText(sdf.format(lastModified), 45, 100, imagePaint);
 		
 		// Combine background and text to a LayerDrawable
 		LayerDrawable layerDrawable = new LayerDrawable(
