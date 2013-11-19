@@ -19,6 +19,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,6 +57,7 @@ public class ImageEditor extends View implements OnTouchListener, EditorGestureH
 	String[] filterNames;
 	int colorFilterIndex;
 	Toast toast;
+	ImageView toastImage;
 	
 	public ImageEditor(Context context, PhotoSortrView photoView, Img img, Toast toast) {
         super(context);
@@ -74,6 +76,7 @@ public class ImageEditor extends View implements OnTouchListener, EditorGestureH
         filterNames = new String[]{"Normal","Grayscale","Sepia","B&W"};
         colorFilterIndex = 0;
         this.toast = toast;
+        this.toastImage = (ImageView) toast.getView().findViewById(R.id.hand);
         
     }
 	
@@ -228,20 +231,23 @@ public class ImageEditor extends View implements OnTouchListener, EditorGestureH
 			case BRIGHTNESS :
 				bmpDrawable = new BitmapDrawable(getResources(), changeBrightnessOrContrast(true,true));
 				invalidate();
-				((TextView) toast.getView().findViewById(R.id.text)).setText("Brightness: "+ (int)Math.ceil(brightness/10));
+				toastImage.setImageResource(R.drawable.brightness_toast);
+				((TextView) toast.getView().findViewById(R.id.text)).setText((int)Math.ceil(brightness/10));
 				toast.show();
 				break;
 			case CONTRAST :
 				bmpDrawable = new BitmapDrawable(getResources(), changeBrightnessOrContrast(false,true));
 				invalidate();
-				((TextView) toast.getView().findViewById(R.id.text)).setText("Contrast: "+ (int)Math.floor(contrast*10));
+				toastImage.setImageResource(R.drawable.contrast_toast);
+				((TextView) toast.getView().findViewById(R.id.text)).setText((int)Math.floor(contrast*10));
 				toast.show();
 				break;
 			case COLORFILTER :
 				colorFilterIndex = colorFilterIndex == 0 ? 3 : colorFilterIndex- 1;
 				bmpDrawable = colorFilters[colorFilterIndex];
 				invalidate();
-				((TextView) toast.getView().findViewById(R.id.text)).setText("Color Filter: "+ filterNames[colorFilterIndex]);
+				//toastImage.setImageResource(R.drawable.color_filter_);
+				((TextView) toast.getView().findViewById(R.id.text)).setText(filterNames[colorFilterIndex]);
 				toast.show();
 				break;
 			default:
@@ -257,13 +263,15 @@ public class ImageEditor extends View implements OnTouchListener, EditorGestureH
 			case BRIGHTNESS :
 				bmpDrawable = new BitmapDrawable(getResources(), changeBrightnessOrContrast(true, false));
 				invalidate();
-				((TextView) toast.getView().findViewById(R.id.text)).setText("Brightness: "+ (int)Math.ceil(brightness/10));
+				toastImage.setImageResource(R.drawable.brightness_toast);
+				((TextView) toast.getView().findViewById(R.id.text)).setText((int)Math.ceil(brightness/10));
 				toast.show();
 				break;
 			case CONTRAST :
 				bmpDrawable = new BitmapDrawable(getResources(), changeBrightnessOrContrast(false,false));
 				invalidate();
-				((TextView) toast.getView().findViewById(R.id.text)).setText("Contrast: "+ (int)Math.floor(contrast*10));
+				toastImage.setImageResource(R.drawable.contrast_toast);
+				((TextView) toast.getView().findViewById(R.id.text)).setText((int)Math.floor(contrast*10));
 				toast.show();
 				break;
 			case COLORFILTER :
@@ -328,11 +336,11 @@ public class ImageEditor extends View implements OnTouchListener, EditorGestureH
 		
 		radialMenu = new SemiCircularRadialMenu(context);
 		
-		mBrightness = new SemiCircularRadialMenuItem("Brightness", getResources().getDrawable(R.drawable.ic_action_camera), "Brightness");
-		mContrast = new SemiCircularRadialMenuItem("Contrast", getResources().getDrawable(R.drawable.ic_action_dislike), "Contrast");
-		mSharpness = new SemiCircularRadialMenuItem("Sharpness", getResources().getDrawable(R.drawable.ic_action_info), "Sharpness");
-		mCrop = new SemiCircularRadialMenuItem("Crop", getResources().getDrawable(R.drawable.ic_action_refresh), "Crop");
-		mColor = new SemiCircularRadialMenuItem("Color", getResources().getDrawable(R.drawable.ic_action_search), "Color");
+		mBrightness = new SemiCircularRadialMenuItem("Brightness", getResources().getDrawable(R.drawable.brightness_menu), "Brightness");
+		mContrast = new SemiCircularRadialMenuItem("Contrast", getResources().getDrawable(R.drawable.contrast_menu), "Contrast");
+		mSharpness = new SemiCircularRadialMenuItem("Sharpness", getResources().getDrawable(R.drawable.ic_action_refresh), "Sharpness");
+		mCrop = new SemiCircularRadialMenuItem("Crop", getResources().getDrawable(R.drawable.crop_menu), "Crop");
+		mColor = new SemiCircularRadialMenuItem("Color", getResources().getDrawable(R.drawable.color_filter_menu), "Color");
 				
 		radialMenu.addMenuItem(mBrightness.getMenuID(), mBrightness);
 		radialMenu.addMenuItem(mContrast.getMenuID(), mContrast);

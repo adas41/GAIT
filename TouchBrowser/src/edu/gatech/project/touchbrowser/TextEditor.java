@@ -160,11 +160,11 @@ public class TextEditor extends EditText implements OnTouchListener, EditorGestu
 		
 		radialMenu = new SemiCircularRadialMenu(context);
 		
-		mBold = new SemiCircularRadialMenuItem("Bold", getResources().getDrawable(R.drawable.ic_action_camera), "Bold");
-		mItalic = new SemiCircularRadialMenuItem("Italic", getResources().getDrawable(R.drawable.ic_action_dislike), "Italic");
-		mUnderline = new SemiCircularRadialMenuItem("Underline", getResources().getDrawable(R.drawable.ic_action_info), "Underline");
-		mSize = new SemiCircularRadialMenuItem("Size", getResources().getDrawable(R.drawable.ic_action_refresh), "Size");
-		mStyle = new SemiCircularRadialMenuItem("Style", getResources().getDrawable(R.drawable.ic_action_search), "Style");
+		mBold = new SemiCircularRadialMenuItem("Bold", getResources().getDrawable(R.drawable.bold_menu), "Bold");
+		mItalic = new SemiCircularRadialMenuItem("Italic", getResources().getDrawable(R.drawable.italic_menu), "Italic");
+		mUnderline = new SemiCircularRadialMenuItem("Underline", getResources().getDrawable(R.drawable.underline_menu), "Underline");
+		mSize = new SemiCircularRadialMenuItem("Size", getResources().getDrawable(R.drawable.font_size_menu), "Size");
+		mStyle = new SemiCircularRadialMenuItem("Style", getResources().getDrawable(R.drawable.font_style_menu), "Style");
 				
 		radialMenu.addMenuItem(mBold.getMenuID(), mBold);
 		radialMenu.addMenuItem(mItalic.getMenuID(), mItalic);
