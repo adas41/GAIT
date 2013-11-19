@@ -43,9 +43,11 @@ public final class GestureListener extends SimpleOnGestureListener {
             } else {
                 if (Math.abs(diffY) > SWIPE_THRESHOLD && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                     if (diffY > 0) {
-                        onSwipeBottom();
+                        System.out.println("++++++swipe bottom");
+                    	gestureHandler.swipeBottom();
                     } else {
-                        onSwipeTop();
+                    	System.out.println("++++++swipe top");
+                        gestureHandler.swipeTop();
                     }
                 }
             }
@@ -97,5 +99,9 @@ interface EditorGestureHandler{
 	 public void swipeRight();
 	 
 	 public void swipeLeft();
+	 
+	 public void swipeBottom();
+	 
+	 public void swipeTop();
 	 
  }

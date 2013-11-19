@@ -30,6 +30,7 @@
 package edu.gatech.project.touchbrowser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -39,16 +40,12 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.graphics.RectF;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -56,6 +53,10 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
+
+import com.touchmenotapps.widget.radialmenu.semicircularmenu.SemiCircularRadialMenu;
+
 import edu.gatech.project.touchbrowser.MultiTouchController.MultiTouchObjectCanvas;
 import edu.gatech.project.touchbrowser.MultiTouchController.PointInfo;
 import edu.gatech.project.touchbrowser.MultiTouchController.PositionAndScale;
@@ -111,6 +112,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 	// Arindam
 	int screenWidth = 0;
 	int screenHeight = 0;
+	ArrayList<ArrayList<DragPoint>> listOfAnimePoints;
 
 	
 	// ---------------------------------------------------------------------------------------------------
@@ -458,6 +460,20 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		public void openObjInDetailedView(final Img img){
 			
 			System.out.println("Double tap");
+			final PhotoSortrActivity psa = ((PhotoSortrActivity)context);
+			if(psa.containerLayout.getChildCount() >= 7 && psa.containerLayout.getChildAt(6) != null){
+				
+				if(psa.containerLayout.getChildCount() == 8 && psa.containerLayout.getChildAt(7) != null)
+					psa.containerLayout.removeViewAt(7);
+				
+				View view = psa.containerLayout.getChildAt(6);
+				if(view instanceof TextEditor)
+					addTextImgFromEditor(((TextEditor)view).getText().toString());
+				else if(view instanceof ImageEditor)
+					addImgFromEditor(((ImageEditor)view).img);
+				
+				
+			}
 			
 			mImages.remove(img);
 			currentObjInEditor = img;
@@ -465,7 +481,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 			
 			final ImageView animatedImg = new ImageView(context);
 					
-			final PhotoSortrActivity psa = ((PhotoSortrActivity)context);
+			
 			
 			animatedImg.setImageDrawable(img.getDrawable());
 			
@@ -499,11 +515,14 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		public View addEditorView(Img img){
 			
 			View pcc = null;
+			Toast toast = ((PhotoSortrActivity)context).customToast;
+			toast.setGravity(Gravity.BOTTOM, 380, 200);
+	        toast.getView().setBackgroundColor(Color.GRAY);
 			if(img instanceof TextImg){
-				pcc = new TextEditor(context, this, (TextImg)img);
+				pcc = new TextEditor(context, this, (TextImg)img,toast);
 			}
 			else if(img instanceof Img){
-				pcc = new ImageEditor (context,this,img);
+				pcc = new ImageEditor (context,this,img,toast);
 			    Bitmap result = Bitmap.createBitmap(25, 25, Bitmap.Config.ARGB_8888);
 			    Canvas canvas = new Canvas(result);
 			    //pcc.draw(canvas);
@@ -558,6 +577,10 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		((PhotoSortrActivity)context).containerLayout.removeViewAt(6);
 		mImages.add(img);
 		//currentObjInEditor = null;
+		RelativeLayout layout = ((PhotoSortrActivity)context).containerLayout;
+		if(layout.getChildCount() == 7 && layout.getChildAt(6) != null){
+			layout.removeViewAt(6);
+		}
 		invalidate();
 		
 	}
@@ -568,8 +591,12 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		img.setDrawable(PhotoSortrActivity.addTextResource(getResources(), new Date(),text.getBytes().length));
 		mImages.add(img);
 		//currentObjInEditor = null;
-		invalidate();
+		RelativeLayout layout = ((PhotoSortrActivity)context).containerLayout;
 		((PhotoSortrActivity)context).containerLayout.removeViewAt(6);
+		if(layout.getChildCount() == 7 && layout.getChildAt(6) != null){
+			layout.removeViewAt(6);
+		}
+		invalidate();
 	}
 	
 	public Img getObjectAtTouchPoint(PointInfo pt, int touchIndex){
@@ -583,6 +610,191 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 				return im;
 		}
 		return null;
+	}
+	
+	//Hitesh Oct 25
+	public void addRadialMenu(SemiCircularRadialMenu menu){
+		
+		RelativeLayout layout = ((PhotoSortrActivity)context).containerLayout;
+		if(layout.getChildCount() == 7){
+			menu.dismissMenu();
+			RelativeLayout.LayoutParams menuViewParams = new RelativeLayout.LayoutParams(300 ,400);
+			menuViewParams.leftMargin = screenWidth/2 - 200;
+		    menuViewParams.topMargin = 270;
+		    
+		    menu.setLayoutParams(menuViewParams);
+		    //menu.setId(10);
+		    //((ViewGroup)menu.getParent()).removeView(menu);
+		    ((PhotoSortrActivity)context).containerLayout.addView(menu,7);
+		}
+	    
+	}
+	
+	public void removeRadialMenu(){
+		RelativeLayout layout = ((PhotoSortrActivity)context).containerLayout;
+		if(layout.getChildCount() == 8 && layout.getChildAt(7) != null)
+			layout.removeViewAt(7);
+
+	}
+	
+	//Arindam
+	
+	@SuppressLint("NewApi")
+	public void setPosImg(String dir) {
+
+		System.out.println(dir);
+
+		if (dir.equals("left")) {
+			DragPoint endPointImage = new DragPoint(200, 150);
+			DragPoint endPointText = new DragPoint(200, 500);
+
+			saveAnimePoints(endPointText, endPointImage);
+			animateImgs(endPointText, endPointImage);
+
+		}
+
+		if (dir.equals("right")) {
+			if (listOfAnimePoints.size() > 0) {
+				for (ArrayList<DragPoint> list : listOfAnimePoints) {
+					System.out
+							.println("XXXXXXXXXXXX List reversed!! XXXXXXXXXXXXX");
+					Collections.reverse(list);
+				}
+				for (int i = 0; i < 11; i++) {
+					for (int j = 0; j < mImages.size(); j++) {
+						mImages.get(j).setPos(
+								listOfAnimePoints.get(j).get(i).x,
+								listOfAnimePoints.get(j).get(i).y,
+								mImages.get(j).getScaleX(),
+								mImages.get(j).getScaleY(),
+								mImages.get(j).getAngle());
+						invalidate();
+					}
+				}
+				listOfAnimePoints.clear();
+			}
+		}
+
+		if (dir.equals("down")) {
+			DragPoint point = new DragPoint(150, 100);
+
+			for (Img img : mImages) {
+
+				if (img.originalWidth != img.width) {
+					img.originalWidth = img.width;
+				}
+				if (img.originalHeight != img.height)
+					img.originalHeight = img.height;
+				if (img.originalCenterX != img.centerX)
+					img.originalCenterX = img.centerX;
+				if (img.originalCenterY != img.centerY)
+					img.originalCenterY = img.centerY;
+				if (img.originalScaleX != img.scaleX)
+					img.originalScaleX = img.scaleX;
+				if (img.originalScaleY != img.scaleY)
+					img.originalScaleY = img.scaleY;
+				if (img.originalAngle != img.angle)
+					img.originalAngle = img.angle;
+
+				img.width = 200;
+				img.height = 150;
+
+				img.setPos(point.x, point.y, 1.0f, 1.0f, 0);
+
+				point.x += 300;
+				if (point.x >= 800) {
+					point.x = 150;
+					point.y += 175;
+				}
+				invalidate();
+			}
+		}
+
+		if (dir.equals("up")) {
+			for (Img img : mImages) {
+
+				System.out.println("width=" + img.originalWidth + " height="
+						+ img.originalHeight);
+
+				img.width = img.originalWidth;
+				img.height = img.originalHeight;
+
+				/*
+				 * img.centerX = img.originalCenterX; img.centerY =
+				 * img.originalCenterY; img.scaleX = img.originalScaleX;
+				 * img.scaleY = img.originalScaleY; img.angle =
+				 * img.originalAngle;
+				 */
+
+				img.setPos(img.originalCenterX, img.originalCenterY,
+						img.originalScaleX, img.originalScaleY,
+						img.originalAngle);
+
+				invalidate();
+			}
+		}
+
+	}
+
+	private void saveAnimePoints(DragPoint endPointText, DragPoint endPointImage) {
+		// TODO Auto-generated method stub
+		listOfAnimePoints = new ArrayList<ArrayList<DragPoint>>();
+		for (Img img : mImages) {
+			DragPoint startPoint = new DragPoint(img.getCenterX(),
+					img.getCenterY());
+			if (img instanceof TextImg) {
+				listOfAnimePoints.add(getIntermediatePoints(startPoint,
+						endPointText, 10));
+			} else
+				listOfAnimePoints.add(getIntermediatePoints(startPoint,
+						endPointImage, 10));
+		}
+	}
+
+	@SuppressLint("NewApi")
+	void animateImgs(DragPoint endPointText, DragPoint endPointImage) {
+		for (int i = 0; i < 11; i++) {
+			for (int j = 0; j < mImages.size(); j++) {
+				mImages.get(j).setPos(listOfAnimePoints.get(j).get(i).x,
+						listOfAnimePoints.get(j).get(i).y,
+						mImages.get(j).getScaleX(), mImages.get(j).getScaleY(),
+						mImages.get(j).getAngle());
+				invalidate();
+			}
+		}
+
+		for (Img img : mImages) {
+			if (img instanceof TextImg) {
+				img.setPos(endPointText.x, endPointText.y, img.getScaleX(),
+						img.getScaleY(), img.getAngle());
+				invalidate();
+			} else
+				img.setPos(endPointImage.x, endPointImage.y, img.getScaleX(),
+						img.getScaleY(), img.getAngle());
+			invalidate();
+		}
+	}
+
+	ArrayList<DragPoint> getIntermediatePoints(DragPoint start, DragPoint end,
+			int maxNoOfPoints) {
+
+		ArrayList<DragPoint> listOfPoints = new ArrayList<DragPoint>();
+
+		listOfPoints.add(new DragPoint(start.x, start.y));
+
+		int i = maxNoOfPoints - 1;
+		while (i >= 1) {
+			DragPoint point = new DragPoint((start.x + end.x) * i
+					/ maxNoOfPoints, (start.y + end.y) * i / maxNoOfPoints);
+			// DragPoint point = new DragPoint(start.x - 50, start.y - 50);
+			listOfPoints.add(point);
+			i--;
+		}
+
+		listOfPoints.add(new DragPoint(end.x, end.y));
+
+		return listOfPoints;
+
 	}
 
 }

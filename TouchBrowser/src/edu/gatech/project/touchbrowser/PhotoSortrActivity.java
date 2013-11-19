@@ -55,6 +55,10 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.Gravity;
@@ -85,7 +89,7 @@ import com.example.testphotosortr.R;
 
 
 public class PhotoSortrActivity extends Activity implements
-OnGesturePerformedListener{
+OnGesturePerformedListener, SensorEventListener{
 	
 	PhotoSortrView photoSorter;
 	HorizontalScrollView folderView;
@@ -118,6 +122,20 @@ OnGesturePerformedListener{
 	View verticalRule;
 	RelativeLayout.LayoutParams verticalRuleParams;
 	
+	// Arindam Oct 25
+	private SensorManager mSensorManager;
+	private Sensor mAccelerometer;
+
+	private long lastUpdate;
+	private float last_x;
+	private float last_y;
+	private float last_z;
+	private boolean tiltToLeft = false;
+	private boolean tiltToRight = false;
+	private boolean tiltToDown = false;
+	private boolean tiltToUp = false;	
+	private static final float SHAKE_THRESHOLD = 20;
+	
 		
 	// -----------------------------------------------------------------------------------------------------------
 
@@ -131,7 +149,13 @@ OnGesturePerformedListener{
 		int height = (int) ((WindowManager) getApplicationContext()
 				.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()
 				.getHeight();
-		
+		mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+	    mSensorManager.registerListener(this,
+	            mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+	            SensorManager.SENSOR_DELAY_NORMAL);
+	    mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+	    lastUpdate = System.currentTimeMillis();
+	    
 		containerLayout = new RelativeLayout(getApplicationContext());
 		super.onCreate(savedInstanceState);
 		this.setTitle(R.string.instructions);
@@ -374,7 +398,7 @@ OnGesturePerformedListener{
 		verticalRuleParams = new RelativeLayout.LayoutParams(3,LayoutParams.FILL_PARENT);
 		verticalRuleParams.leftMargin = width * 60 / 100;
 		verticalRuleParams.topMargin = 80;
-		verticalRule.setBackgroundColor(Color.rgb(47, 47, 47));
+		verticalRule.setBackgroundColor(Color.TRANSPARENT);
 	    containerLayout.addView(verticalRule, 0, verticalRuleParams);
 		
 		containerLayout.addView(newFolder, 0,newFolderParams);
@@ -757,4 +781,110 @@ OnGesturePerformedListener{
 		}
 		return null;
 	}
+	
+	public void onSensorChanged(SensorEvent event) {
+	    if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+	    	
+
+
+	        float[] values = event.values;
+
+	        // Movement
+	        float x = values[0];
+	        float y = values[1];
+	        float z = values[2];
+
+	        /*float accelationSquareRoot = (x * x + y * y + z * z)
+	                / (SensorManager.AXIS_X * SensorManager.AXIS_X);*/
+
+	        long actualTime = System.currentTimeMillis();
+	        if ((actualTime - lastUpdate) > 100) 
+	        {
+	            long diffTime = (actualTime - lastUpdate);
+	            lastUpdate = actualTime;
+
+
+	            if(Math.round(x*(1000D))/(1000D) > 4.0000){
+	            	if(!tiltToLeft){
+	            		tiltToLeft = true;
+	                	changeImgPos("left");
+	            	}
+	            }
+	            if(Math.round(x*(1000D))/(1000D) > 0.0000 && Math.round(x*(1000D))/(1000D) < 4.0000){
+	            	tiltToLeft = false;
+	            }
+	            if(Math.round(x*(1000D))/(1000D) < -4.0000){
+	            	if(!tiltToRight){
+	            		tiltToRight = true;
+	                	changeImgPos("right");
+	            	}
+	            }
+	            if(Math.round(x*(1000D))/(1000D) > -4.0000 && Math.round(x*(1000D))/(1000D) < 0.0000){
+	            	tiltToRight = false;
+	            }
+	            
+	             
+	            
+	            
+	            
+	            
+	            
+	            
+	            
+	            if(Math.round(y*(1000D))/(1000D) < -4.0000){
+	            	if(!tiltToDown){
+	            		tiltToDown = true;
+	                	changeImgPos("down");
+	            	}
+	            }
+	            if(Math.round(y*(1000D))/(1000D) > -4.0000 && Math.round(x*(1000D))/(1000D) < 0.0000){
+	            	tiltToDown = false;
+	            }
+	            
+	            if(Math.round(y*(1000D))/(1000D) > 4.0000){
+	            	if(!tiltToUp){
+	            		tiltToUp = true;
+	                	changeImgPos("up");
+	            	}
+	            }
+	            if(Math.round(y*(1000D))/(1000D) > 0.0000 && Math.round(y*(1000D))/(1000D) < 4.0000){
+	            	tiltToUp = false;
+	            }
+	            
+
+	        float speed = Math.abs(x+y+z - last_x - last_y - last_z) / diffTime * 10000;
+
+	        if (speed > SHAKE_THRESHOLD) {
+	            //Log.d("sensor", "shake detected w/ speed: " + speed);
+	            //Toast.makeText(this, "shake detected w/ speed: " + speed, Toast.LENGTH_SHORT).show();
+	        }
+	        last_x = x;
+	        last_y = y;
+	        last_z = z;
+	        }
+	    }
+
+	}
+
+		private void changeImgPos(String dir) {
+			// TODO Auto-generated method stub
+			if(tiltToLeft){
+				photoSorter.setPosImg(dir);
+			}
+			if(tiltToRight){
+				photoSorter.setPosImg(dir);
+			}
+			if(tiltToDown) {
+				photoSorter.setPosImg(dir);
+			}
+			if(tiltToUp) {
+				photoSorter.setPosImg(dir);
+			}
+		}
+
+		@Override
+		public void onAccuracyChanged(Sensor arg0, int arg1) {
+			// TODO Auto-generated method stub
+			
+		}
 }

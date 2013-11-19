@@ -15,7 +15,8 @@
         <activity
             android:name="edu.gatech.project.touchbrowser.PhotoSortrActivity"
             android:label="@string/title_activity_photo_sortr" 
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

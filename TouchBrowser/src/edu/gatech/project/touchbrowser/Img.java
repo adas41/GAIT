@@ -24,9 +24,9 @@ class Img extends ImageView implements Cloneable{
 	
 	private boolean firstLoad;
 
-	private int width, height, displayWidth, displayHeight;
+	int width, height, displayWidth, displayHeight;
 
-	private float centerX, centerY, scaleX, scaleY, angle;
+	float centerX, centerY, scaleX, scaleY, angle;
 
 	private float minX, maxX, minY, maxY;
 
@@ -37,6 +37,10 @@ class Img extends ImageView implements Cloneable{
 	private DragPoint start;
 	private DragPoint end;
 	Paint paint;
+	
+	//Arindam
+	int originalWidth, originalHeight;
+	float originalCenterX, originalCenterY, originalScaleX, originalScaleY, originalAngle;
 
 	public Img(Context context, int resId, Resources res) {
 		super(context);
