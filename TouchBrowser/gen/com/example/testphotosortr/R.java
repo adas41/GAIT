@@ -28,35 +28,42 @@ public final class R {
         public static final int crop_menu=0x7f02000e;
         public static final int custom_background=0x7f02000f;
         public static final int directory=0x7f020010;
-        public static final int font_size_menu=0x7f020011;
-        public static final int font_style_menu=0x7f020012;
-        public static final int hand=0x7f020013;
-        public static final int ic_action_camera=0x7f020014;
-        public static final int ic_action_dislike=0x7f020015;
-        public static final int ic_action_info=0x7f020016;
-        public static final int ic_action_refresh=0x7f020017;
-        public static final int ic_action_search=0x7f020018;
-        public static final int ic_launcher=0x7f020019;
-        public static final int italic_menu=0x7f02001a;
-        public static final int lake=0x7f02001b;
-        public static final int new_folder=0x7f02001c;
-        public static final int pin=0x7f02001d;
-        public static final int recycle_bin=0x7f02001e;
-        public static final int sunset=0x7f02001f;
-        public static final int tahiti=0x7f020020;
-        public static final int textfile=0x7f020021;
-        public static final int underline_menu=0x7f020022;
+        public static final int dog=0x7f020011;
+        public static final int font_size_menu=0x7f020012;
+        public static final int font_style_menu=0x7f020013;
+        public static final int hand=0x7f020014;
+        public static final int ic_action_camera=0x7f020015;
+        public static final int ic_action_dislike=0x7f020016;
+        public static final int ic_action_info=0x7f020017;
+        public static final int ic_action_refresh=0x7f020018;
+        public static final int ic_action_search=0x7f020019;
+        public static final int ic_launcher=0x7f02001a;
+        public static final int italic_menu=0x7f02001b;
+        public static final int lake=0x7f02001c;
+        public static final int new_folder=0x7f02001d;
+        public static final int pin=0x7f02001e;
+        public static final int recycle_bin=0x7f02001f;
+        public static final int sunset=0x7f020020;
+        public static final int tahiti=0x7f020021;
+        public static final int textfile=0x7f020022;
+        public static final int underline_menu=0x7f020023;
     }
     public static final class id {
         public static final int ButtonTest=0x7f070000;
-        public static final int hand=0x7f070002;
-        public static final int text=0x7f070003;
-        public static final int toast_layout_root=0x7f070001;
+        public static final int gesturehand=0x7f070002;
+        public static final int gesturetext=0x7f070003;
+        public static final int gesturetoast_layout_root=0x7f070001;
+        public static final int hand=0x7f070005;
+        public static final int longtoast_layout_root=0x7f070004;
+        public static final int text=0x7f070006;
+        public static final int toast_layout_root=0x7f070007;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
         public static final int activity_photo_sortr=0x7f030001;
-        public static final int toast_layout=0x7f030002;
+        public static final int gesturetoast_layout=0x7f030002;
+        public static final int longtoast_layout=0x7f030003;
+        public static final int toast_layout=0x7f030004;
     }
     public static final class raw {
         public static final int gestures=0x7f040000;
