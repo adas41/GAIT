@@ -46,15 +46,19 @@ import android.graphics.RectF;
 import android.media.MediaPlayer;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.testphotosortr.R;
 import com.touchmenotapps.widget.radialmenu.semicircularmenu.SemiCircularRadialMenu;
 
 import edu.gatech.project.touchbrowser.MultiTouchController.MultiTouchObjectCanvas;
@@ -515,14 +519,29 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		public View addEditorView(Img img){
 			
 			View pcc = null;
-			Toast toast = ((PhotoSortrActivity)context).customToast;
-			toast.setGravity(Gravity.BOTTOM, 380, 200);
-	        toast.getView().setBackgroundColor(Color.GRAY);
+			
+			LayoutInflater inflater = ((PhotoSortrActivity)context).getLayoutInflater();
+			View longlayout = inflater.inflate(R.layout.longtoast_layout,
+					(ViewGroup) findViewById(R.id.longtoast_layout_root));
+			longlayout.setLayoutParams(new LinearLayout.LayoutParams(500, 200));
+			Toast longToast = new Toast(context);
+			longToast.setGravity(Gravity.BOTTOM, 380,200);
+			longToast.setDuration(Toast.LENGTH_SHORT);
+			longToast.setView(longlayout);
+			
+			View layout = inflater.inflate(R.layout.toast_layout,
+					(ViewGroup) findViewById(R.id.toast_layout_root));
+			longlayout.setLayoutParams(new LinearLayout.LayoutParams(500, 200));
+			Toast toast = new Toast(context);
+			toast.setGravity(Gravity.BOTTOM, 380,200);
+			toast.setDuration(Toast.LENGTH_SHORT);
+			toast.setView(layout);
+		
 			if(img instanceof TextImg){
-				pcc = new TextEditor(context, this, (TextImg)img,toast);
+				pcc = new TextEditor(context, this, (TextImg)img,toast,longToast);
 			}
 			else if(img instanceof Img){
-				pcc = new ImageEditor (context,this,img,toast);
+				pcc = new ImageEditor (context,this,img,toast,longToast);
 			    Bitmap result = Bitmap.createBitmap(25, 25, Bitmap.Config.ARGB_8888);
 			    Canvas canvas = new Canvas(result);
 			    //pcc.draw(canvas);
@@ -654,7 +673,7 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		}
 
 		if (dir.equals("right")) {
-			if (listOfAnimePoints.size() > 0) {
+			if (listOfAnimePoints != null && listOfAnimePoints.size() > 0) {
 				for (ArrayList<DragPoint> list : listOfAnimePoints) {
 					System.out
 							.println("XXXXXXXXXXXX List reversed!! XXXXXXXXXXXXX");
@@ -677,25 +696,27 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 
 		if (dir.equals("down")) {
 			DragPoint point = new DragPoint(150, 100);
-
+			
 			for (Img img : mImages) {
 
-				if (img.originalWidth != img.width) {
-					img.originalWidth = img.width;
+				if(img.width != 200){
+					
+					if (img.originalWidth != img.width) {
+						img.originalWidth = img.width;
+					}
+					if (img.originalHeight != img.height)
+						img.originalHeight = img.height;
+					if (img.originalCenterX != img.centerX)
+						img.originalCenterX = img.centerX;
+					if (img.originalCenterY != img.centerY)
+						img.originalCenterY = img.centerY;
+					if (img.originalScaleX != img.scaleX)
+						img.originalScaleX = img.scaleX;
+					if (img.originalScaleY != img.scaleY)
+						img.originalScaleY = img.scaleY;
+					if (img.originalAngle != img.angle)
+						img.originalAngle = img.angle;
 				}
-				if (img.originalHeight != img.height)
-					img.originalHeight = img.height;
-				if (img.originalCenterX != img.centerX)
-					img.originalCenterX = img.centerX;
-				if (img.originalCenterY != img.centerY)
-					img.originalCenterY = img.centerY;
-				if (img.originalScaleX != img.scaleX)
-					img.originalScaleX = img.scaleX;
-				if (img.originalScaleY != img.scaleY)
-					img.originalScaleY = img.scaleY;
-				if (img.originalAngle != img.angle)
-					img.originalAngle = img.angle;
-
 				img.width = 200;
 				img.height = 150;
 
@@ -711,26 +732,27 @@ public class PhotoSortrView extends View implements MultiTouchObjectCanvas<Img> 
 		}
 
 		if (dir.equals("up")) {
+			
 			for (Img img : mImages) {
+				
+				if(img.originalWidth != 0 && img.originalHeight != 0){
 
-				System.out.println("width=" + img.originalWidth + " height="
-						+ img.originalHeight);
-
-				img.width = img.originalWidth;
-				img.height = img.originalHeight;
-
-				/*
-				 * img.centerX = img.originalCenterX; img.centerY =
-				 * img.originalCenterY; img.scaleX = img.originalScaleX;
-				 * img.scaleY = img.originalScaleY; img.angle =
-				 * img.originalAngle;
-				 */
-
-				img.setPos(img.originalCenterX, img.originalCenterY,
-						img.originalScaleX, img.originalScaleY,
-						img.originalAngle);
-
-				invalidate();
+					img.width = img.originalWidth;
+					img.height = img.originalHeight;
+	
+					/*
+					 * img.centerX = img.originalCenterX; img.centerY =
+					 * img.originalCenterY; img.scaleX = img.originalScaleX;
+					 * img.scaleY = img.originalScaleY; img.angle =
+					 * img.originalAngle;
+					 */
+	
+					img.setPos(img.originalCenterX, img.originalCenterY,
+							img.originalScaleX, img.originalScaleY,
+							img.originalAngle);
+	
+					invalidate();
+				}
 			}
 		}
 

@@ -2,7 +2,6 @@ package edu.gatech.project.touchbrowser;
 
 import android.content.Context;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.text.InputType;
 import android.text.Spannable;
 import android.text.style.StyleSpan;
@@ -12,9 +11,8 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,8 +35,11 @@ public class TextEditor extends EditText implements OnTouchListener, EditorGestu
 	String[] fontNames = {"Default", "Monospace", "Serif","Sans Serif"};
 	int currentFont;
 	Toast toast;
+	ImageView toastImage;
+	Toast longToast;
+	ImageView longToastImage;
 	
-	public TextEditor(Context context, PhotoSortrView photoView, TextImg img, Toast toast) {
+	public TextEditor(Context context, PhotoSortrView photoView, TextImg img, Toast toast, Toast longToast) {
         super(context);
         this.setMinLines(10);
         this.setText(img.getText());
@@ -55,6 +56,9 @@ public class TextEditor extends EditText implements OnTouchListener, EditorGestu
         setInputType(InputType.TYPE_NULL);
         this.setSingleLine(false);
         this.toast = toast;
+        this.longToast = longToast;
+        toastImage = (ImageView) toast.getView().findViewById(R.id.hand);
+        longToastImage = (ImageView) longToast.getView().findViewById(R.id.hand);
         //InputMethodManager mgr = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
 		//mgr.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 		//((PhotoSortrActivity)context).getWindow().setSoftInputMode(
@@ -99,14 +103,16 @@ public class TextEditor extends EditText implements OnTouchListener, EditorGestu
 			case FONT_SIZE : 
 				textSize += 3;
 				setTextSize(textSize);
-				((TextView) toast.getView().findViewById(R.id.text)).setText("Font Size: "+ (int)textSize);
+				toastImage.setImageResource(R.drawable.font_size_menu);
+				((TextView) toast.getView().findViewById(R.id.text)).setText(String.valueOf((int)textSize));
 				toast.show();
 				break;
 			case FONT_STYLE :
 				currentFont = currentFont == 0 ? 3 : currentFont- 1;
 				setTypeface(fonts[currentFont]);
-				((TextView) toast.getView().findViewById(R.id.text)).setText("Font Style: "+ fontNames[currentFont]);
-				toast.show();
+				longToastImage.setImageResource(R.drawable.font_style_menu);
+				((TextView) longToast.getView().findViewById(R.id.text)).setText(String.valueOf(fontNames[currentFont]));
+				longToast.show();
 				break;
 			default:
 				break;
@@ -122,14 +128,16 @@ public class TextEditor extends EditText implements OnTouchListener, EditorGestu
 			case FONT_SIZE :
 				textSize -= 3;
 				setTextSize(textSize);
-				((TextView) toast.getView().findViewById(R.id.text)).setText("Font Size: "+ (int)textSize);
+				toastImage.setImageResource(R.drawable.font_size_menu);
+				((TextView) toast.getView().findViewById(R.id.text)).setText(String.valueOf((int)textSize));
 				toast.show();
 				break;
 			case FONT_STYLE :
 				currentFont = currentFont == 3 ? 0 : currentFont+1;
 				setTypeface(fonts[currentFont]);
-				((TextView) toast.getView().findViewById(R.id.text)).setText("Font Style: "+ fontNames[currentFont]);
-				toast.show();
+				longToastImage.setImageResource(R.drawable.font_style_menu);
+				((TextView) longToast.getView().findViewById(R.id.text)).setText(String.valueOf(fontNames[currentFont]));
+				longToast.show();
 				break;
 			default:
 				break;
@@ -161,10 +169,15 @@ public class TextEditor extends EditText implements OnTouchListener, EditorGestu
 		radialMenu = new SemiCircularRadialMenu(context);
 		
 		mBold = new SemiCircularRadialMenuItem("Bold", getResources().getDrawable(R.drawable.bold_menu), "Bold");
+		mBold.setIconDimen(36);
 		mItalic = new SemiCircularRadialMenuItem("Italic", getResources().getDrawable(R.drawable.italic_menu), "Italic");
+		mItalic.setIconDimen(36);
 		mUnderline = new SemiCircularRadialMenuItem("Underline", getResources().getDrawable(R.drawable.underline_menu), "Underline");
+		mUnderline.setIconDimen(36);
 		mSize = new SemiCircularRadialMenuItem("Size", getResources().getDrawable(R.drawable.font_size_menu), "Size");
+		mSize.setIconDimen(36);
 		mStyle = new SemiCircularRadialMenuItem("Style", getResources().getDrawable(R.drawable.font_style_menu), "Style");
+		mStyle.setIconDimen(36);
 				
 		radialMenu.addMenuItem(mBold.getMenuID(), mBold);
 		radialMenu.addMenuItem(mItalic.getMenuID(), mItalic);

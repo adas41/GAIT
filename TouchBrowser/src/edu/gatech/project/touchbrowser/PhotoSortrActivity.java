@@ -207,14 +207,14 @@ OnGesturePerformedListener, SensorEventListener{
 		
 		// Arindam Apr 12
 		LayoutInflater inflater = getLayoutInflater();
-		View layout = inflater.inflate(R.layout.toast_layout,
-				(ViewGroup) findViewById(R.id.toast_layout_root));
+		View layout = inflater.inflate(R.layout.gesturetoast_layout,
+				(ViewGroup) findViewById(R.id.gesturetoast_layout_root));
 		layout.setLayoutParams(new LinearLayout.LayoutParams(500, 200));
-		layout.setBackgroundColor(Color.TRANSPARENT);
+		//layout.setBackgroundColor(Color.TRANSPARENT);
 
-		image = (ImageView) layout.findViewById(R.id.hand);
+		image = (ImageView) layout.findViewById(R.id.gesturehand);
 		image.setImageResource(R.drawable.hand);
-		TextView text = (TextView) layout.findViewById(R.id.text);
+		TextView text = (TextView) layout.findViewById(R.id.gesturetext);
 		text.setText("Use gesture to undo this move!");
 
 		customToast = new Toast(getApplicationContext());
@@ -807,43 +807,40 @@ OnGesturePerformedListener, SensorEventListener{
 	            if(Math.round(x*(1000D))/(1000D) > 4.0000){
 	            	if(!tiltToLeft){
 	            		tiltToLeft = true;
+	            		tiltToRight = false;
 	                	changeImgPos("left");
 	            	}
 	            }
-	            if(Math.round(x*(1000D))/(1000D) > 0.0000 && Math.round(x*(1000D))/(1000D) < 4.0000){
+	            /*if(Math.round(x*(1000D))/(1000D) > 0.0000 && Math.round(x*(1000D))/(1000D) < 4.0000){
 	            	tiltToLeft = false;
-	            }
+	            }*/
 	            if(Math.round(x*(1000D))/(1000D) < -4.0000){
 	            	if(!tiltToRight){
 	            		tiltToRight = true;
+	            		tiltToLeft = false;
 	                	changeImgPos("right");
 	            	}
 	            }
-	            if(Math.round(x*(1000D))/(1000D) > -4.0000 && Math.round(x*(1000D))/(1000D) < 0.0000){
+	            /*if(Math.round(x*(1000D))/(1000D) > -4.0000 && Math.round(x*(1000D))/(1000D) < 0.0000){
 	            	tiltToRight = false;
-	            }
-	            
-	             
-	            
-	            
-	            
-	            
-	            
-	            
+	            }*/
+	           
 	            
 	            if(Math.round(y*(1000D))/(1000D) < -4.0000){
 	            	if(!tiltToDown){
 	            		tiltToDown = true;
+	            		//tiltToUp = false;
 	                	changeImgPos("down");
 	            	}
 	            }
-	            if(Math.round(y*(1000D))/(1000D) > -4.0000 && Math.round(x*(1000D))/(1000D) < 0.0000){
+	            /*if(Math.round(y*(1000D))/(1000D) > -4.0000 && Math.round(x*(1000D))/(1000D) < 0.0000){
 	            	tiltToDown = false;
-	            }
+	            }*/
 	            
 	            if(Math.round(y*(1000D))/(1000D) > 4.0000){
 	            	if(!tiltToUp){
 	            		tiltToUp = true;
+	            		tiltToDown = false;
 	                	changeImgPos("up");
 	            	}
 	            }
